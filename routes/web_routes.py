@@ -31,10 +31,13 @@ def vendor_required(f):
 
 @web_bp.route("/")
 def home():
-    db = get_db()
-    categories = [serialize_category(c) for c in db.categories.find()]
-    products = [serialize_product(p) for p in db.products.find({"isAvailable": True}).limit(6)]
-    return render_template("home.html", categories=categories, products=products)
+    if current_user.is_authenticated:
+        if getattr(current_user, 'role', None) == 'admin':
+            return redirect('/admin/dashboard')
+        elif getattr(current_user, 'role', None) == 'vendor':
+            return redirect('/vendor/dashboard')
+            
+    return redirect(url_for('web.products'))
 
 @web_bp.route("/login")
 def login():
