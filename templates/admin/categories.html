@@ -1,0 +1,122 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Manage Categories - HyperLocal Admin{% endblock %}
+
+{% block nav_categories %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
+    <div>
+        <h2 class="fw-bold mb-1">Category Catalog</h2>
+        <p class="text-muted mb-0">Manage product categories, customize banner images, and track item metrics.</p>
+    </div>
+    <div>
+        <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#categoryCreateModal">
+            <i class="bi bi-plus-lg"></i>
+            <span>Add New Category</span>
+        </button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white animate-fade-in-up">
+    <div class="table-responsive">
+        <table class="table align-middle table-hover" id="categoriesPageTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Category details</th>
+                    <th>Name</th>
+                    <th>Product Count</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">Loading category definitions...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Category Modals -->
+<div class="modal fade" id="categoryViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Category Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" id="categoryViewBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="categoryCreateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="categoryCreateForm">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Create Product Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="createCatName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="createCatName" placeholder="e.g. Fruits & Vegetables" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createCatImage" class="form-label">Image URL</label>
+                        <input type="text" class="form-control" id="createCatImage" placeholder="https://images.unsplash.com/photo-...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="categoryEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="categoryEditForm">
+                <input type="hidden" id="editCatId">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Edit Category Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editCatName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="editCatName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCatImage" class="form-label">Image URL</label>
+                        <input type="text" class="form-control" id="editCatImage">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/admin.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        loadCategoriesPage();
+    });
+</script>
+{% endblock %}

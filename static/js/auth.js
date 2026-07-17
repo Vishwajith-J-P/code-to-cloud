@@ -33,11 +33,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Redirect based on role
                     setTimeout(() => {
                         const userRole = data.user.role;
-                        if (userRole === "vendor") {
-                            // If they have vendor/admin dashboards built
-                            window.location.href = "/vendor/dashboard"; 
-                        } else if (userRole === "admin") {
-                            window.location.href = "/";
+                        if (userRole === "admin") {
+                            window.location.href = "/admin/dashboard";
+                        } else if (userRole === "vendor") {
+                            window.location.href = "/vendor/dashboard";
                         } else {
                             window.location.href = "/";
                         }

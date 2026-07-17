@@ -6,7 +6,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key-change-in-production")
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/hyperlocal_db")
+    MONGO_URI = os.getenv("MONGO_URI")
     DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
     PORT = int(os.getenv("PORT", 5000))
     

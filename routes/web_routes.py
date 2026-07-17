@@ -1,6 +1,16 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for
+from flask_login import current_user
+from functools import wraps
 
 web_bp = Blueprint("web", __name__, template_folder="../templates", static_folder="../static")
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or getattr(current_user, 'role', None) != 'admin':
+            return redirect('/admin/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 @web_bp.route("/")
 def home():
@@ -37,6 +47,43 @@ def orders():
 @web_bp.route("/profile")
 def profile():
     return render_template("profile.html")
+
+# Admin Dashboard Template Routes
+@web_bp.route("/admin/login")
+def admin_login():
+    if current_user.is_authenticated and getattr(current_user, 'role', None) == 'admin':
+        return redirect('/admin/dashboard')
+    return render_template("admin/login.html")
+
+@web_bp.route("/admin/dashboard")
+@admin_required
+def admin_dashboard():
+    return render_template("admin/dashboard.html")
+
+@web_bp.route("/admin/customers")
+@admin_required
+def admin_customers():
+    return render_template("admin/customers.html")
+
+@web_bp.route("/admin/vendors")
+@admin_required
+def admin_vendors():
+    return render_template("admin/vendors.html")
+
+@web_bp.route("/admin/products")
+@admin_required
+def admin_products():
+    return render_template("admin/products.html")
+
+@web_bp.route("/admin/orders")
+@admin_required
+def admin_orders():
+    return render_template("admin/orders.html")
+
+@web_bp.route("/admin/categories")
+@admin_required
+def admin_categories():
+    return render_template("admin/categories.html")
 
 # Vendor UI Routes
 @web_bp.route("/vendor/dashboard")

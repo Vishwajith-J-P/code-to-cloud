@@ -17,6 +17,7 @@ def create_app():
     CORS(app, supports_credentials=True)
     
     # Initialize Database connection
+    print("Mongo URI:", app.config["MONGO_URI"])
     mongo.init_app(app)
     
     # Initialize Flask-Login
