@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Hyperlocal Marketplace - Catalog{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Filter Panel (Left Sidebar) -->
+        <div class="col-lg-3 mb-4 animate-fade-in-up">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white position-sticky" style="top: 100px;">
+                <h4 class="fw-bold mb-4">Filters</h4>
+                
+                <form id="filterForm">
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Price Range</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" class="form-control rounded-3" id="minPrice" placeholder="Min" min="0">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control rounded-3" id="maxPrice" placeholder="Max" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Availability -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Availability</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="inStock" value="true">
+                            <label class="form-check-label text-slate-700 fs-7" for="inStock">
+                                Exclude Out of Stock
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary rounded-3 btn-sm py-2">Apply Filters</button>
+                        <button type="reset" class="btn btn-outline-secondary rounded-3 btn-sm py-2" onclick="setTimeout(loadProducts, 50)">Reset All</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Products Section (Right) -->
+        <div class="col-lg-9 animate-fade-in-up" style="animation-delay: 0.1s;">
+            <!-- Category circle lists -->
+            <div class="mb-4">
+                <div id="categoriesContainer" class="d-flex flex-wrap align-items-center gap-1">
+                    <span class="spinner-border spinner-border-sm text-primary" role="status"></span> Loading categories...
+                </div>
+            </div>
+            
+            <!-- Dynamic Search input field -->
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4 d-lg-none">
+                <form id="searchFormCatalog">
+                    <div class="input-group">
+                        <input type="search" class="form-control rounded-3 search-input" id="searchInputCatalog" placeholder="Search catalog...">
+                        <button class="btn btn-primary rounded-3" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="row" id="productsContainer">
+                <!-- Dynamic cards loaded via JavaScript -->
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/marketplace.js"></script>
+{% endblock %}

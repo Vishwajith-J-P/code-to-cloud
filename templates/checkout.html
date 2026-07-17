@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Hyperlocal Marketplace - Checkout{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="fw-bold mb-5 animate-fade-in-up">Checkout Details</h2>
+    
+    <div class="row">
+        <!-- Billing / Shipping Form (Left) -->
+        <div class="col-lg-7 mb-4 animate-fade-in-up">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <h4 class="fw-bold mb-4">Shipping Info</h4>
+                
+                <form id="checkoutForm">
+                    <!-- Shipping Address -->
+                    <div class="mb-4">
+                        <label for="shippingAddress" class="form-label fw-semibold">Delivery Address</label>
+                        <textarea class="form-control rounded-3 border-slate-200" id="shippingAddress" rows="3" placeholder="Enter complete shipping details..." required></textarea>
+                    </div>
+                    
+                    <!-- Payment Selection -->
+                    <div class="mb-4">
+                        <label for="paymentMethod" class="form-label fw-semibold">Payment Option</label>
+                        <select class="form-select py-2.5 rounded-3 border-slate-200" id="paymentMethod">
+                            <option value="COD" selected>Cash on Delivery (COD)</option>
+                            <option value="Credit Card">Credit/Debit Card</option>
+                            <option value="UPI">UPI/Digital Wallet</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary py-3 rounded-3 fw-semibold">
+                            <i class="bi bi-shield-check me-2"></i> Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Summary Panel (Right) -->
+        <div class="col-lg-5 animate-fade-in-up" style="animation-delay: 0.1s;">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white position-sticky" style="top: 100px;">
+                <h4 class="fw-bold mb-4">Order Summary</h4>
+                
+                <div id="checkoutSummary">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/cart.js"></script>
+{% endblock %}

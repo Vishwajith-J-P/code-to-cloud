@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Hyperlocal Marketplace - Home{% endblock %}
+
+{% block content %}
+<!-- Premium Hero Banner -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0 animate-fade-in-up">
+                <h1 class="hero-title">Fresh Essentials, <br>Delivered from <span class="text-primary">Local Shops</span></h1>
+                <p class="hero-subtitle">Support your neighbourhood business. Browse fresh groceries, vegetables, daily essentials and much more from local stores with super-fast delivery.</p>
+                <div class="d-flex gap-3">
+                    <a href="/products" class="btn btn-primary btn-lg rounded-3">
+                        <i class="bi bi-bag-fill me-2"></i> Shop Products
+                    </a>
+                    <a href="/register" class="btn btn-outline-primary btn-lg rounded-3">
+                        Join as Vendor
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block animate-fade-in-up" style="animation-delay: 0.1s;">
+                <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800" class="img-fluid rounded-4 shadow-lg border border-white border-2" alt="Market grocery">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories section -->
+<section class="mb-5 animate-fade-in-up" style="animation-delay: 0.2s;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Browse Categories</h3>
+            <a href="/products" class="text-primary text-decoration-none fw-semibold">View All <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div id="categoriesContainer" class="d-flex flex-wrap align-items-center">
+            <!-- Dynamic pills loaded via JavaScript -->
+            <span class="spinner-border spinner-border-sm text-primary" role="status"></span> Loading categories...
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="animate-fade-in-up" style="animation-delay: 0.3s;">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Featured Products</h3>
+        <div class="row" id="productsContainer">
+            <!-- Dynamic product cards loaded via JavaScript -->
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/marketplace.js"></script>
+{% endblock %}

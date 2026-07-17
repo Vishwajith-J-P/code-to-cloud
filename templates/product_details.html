@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Hyperlocal Marketplace - Product Details{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div id="productDetailsContainer" class="animate-fade-in-up" data-product-id="{{ product_id }}">
+        <!-- Dynamic product info and review sections loaded via JavaScript -->
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading details...</span>
+            </div>
+            <p class="text-muted mt-2">Retrieving product catalog information...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/marketplace.js"></script>
+{% endblock %}
