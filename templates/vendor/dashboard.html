@@ -9,7 +9,7 @@
 {% block content %}
 <!-- Stats Cards Row -->
 <div class="row g-4 mb-4">
-    <div class="col-12 col-sm-6 col-xl-4">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card stat-card h-100 border-0 shadow-sm bg-white rounded-3 overflow-hidden">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
@@ -17,13 +17,13 @@
                 </div>
                 <div>
                     <h6 class="text-muted fw-normal mb-1">Total Products</h6>
-                    <h3 class="mb-0 fw-bold text-dark">{{ total_products }}</h3>
+                    <h3 class="mb-0 fw-bold text-dark" id="vendorStatProducts">{{ total_products }}</h3>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-12 col-sm-6 col-xl-4">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card stat-card h-100 border-0 shadow-sm bg-white rounded-3 overflow-hidden">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
@@ -31,13 +31,27 @@
                 </div>
                 <div>
                     <h6 class="text-muted fw-normal mb-1">Total Orders</h6>
-                    <h3 class="mb-0 fw-bold text-dark">{{ total_orders }}</h3>
+                    <h3 class="mb-0 fw-bold text-dark" id="vendorStatOrders">{{ total_orders }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card stat-card h-100 border-0 shadow-sm bg-white rounded-3 overflow-hidden">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="stat-icon bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                    <i class="bi bi-clock-history fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted fw-normal mb-1">Pending Orders</h6>
+                    <h3 class="mb-0 fw-bold text-dark" id="vendorStatPending">—</h3>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-12 col-sm-6 col-xl-4">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card stat-card h-100 border-0 shadow-sm bg-white rounded-3 overflow-hidden">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="stat-icon bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
@@ -45,7 +59,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted fw-normal mb-1">Total Revenue</h6>
-                    <h3 class="mb-0 fw-bold text-dark">${{ "%.2f"|format(revenue) }}</h3>
+                    <h3 class="mb-0 fw-bold text-dark" id="vendorStatRevenue">${{ "%.2f"|format(revenue) }}</h3>
                 </div>
             </div>
         </div>
@@ -57,7 +71,7 @@
     <div class="col-12 col-xl-8">
         <div class="card border-0 shadow-sm rounded-3 h-100">
             <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fw-bold text-dark">Monthly Sales</h6>
+                <h6 class="mb-0 fw-bold text-dark">Monthly Sales Overview</h6>
             </div>
             <div class="card-body px-4 pb-4 pt-0">
                 <div style="height: 300px;">
@@ -69,10 +83,26 @@
     <div class="col-12 col-xl-4">
         <div class="card border-0 shadow-sm rounded-3 h-100">
             <div class="card-header bg-white border-0 py-3 px-4">
-                <h6 class="mb-0 fw-bold text-dark">Sales by Categories</h6>
+                <h6 class="mb-0 fw-bold text-dark">Order Status Breakdown</h6>
             </div>
             <div class="card-body px-4 pb-4 pt-0">
                 <div style="height: 300px; display: flex; justify-content: center; align-items: center;">
+                    <canvas id="vendorOrderStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Products Row -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-0 py-3 px-4">
+                <h6 class="mb-0 fw-bold text-dark">Top 5 Selling Products</h6>
+            </div>
+            <div class="card-body px-4 pb-4 pt-0">
+                <div style="height: 260px;">
                     <canvas id="topProductsChart"></canvas>
                 </div>
             </div>
@@ -126,44 +156,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // Initialize simple charts
-        const ctxSales = document.getElementById('monthlySalesChart').getContext('2d');
-        new Chart(ctxSales, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'Store Revenue ($)',
-                    data: [1200, 1900, 3000, 5000, 4000, 3000, 4500, 5200, 6000, 5500, 7000, 8500],
-                    borderColor: '#4f46e5',
-                    tension: 0.4,
-                    fill: true,
-                    backgroundColor: 'rgba(79, 70, 229, 0.05)'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-
-        const ctxProd = document.getElementById('topProductsChart').getContext('2d');
-        new Chart(ctxProd, {
-            type: 'doughnut',
-            data: {
-                labels: ['Groceries', 'Fruits & Vegetables', 'Bakery'],
-                datasets: [{
-                    data: [55, 30, 15],
-                    backgroundColor: ['#4f46e5', '#10b981', '#f59e0b']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    });
-</script>
+<script src="/static/js/vendor.js"></script>
 {% endblock %}

@@ -6,36 +6,25 @@
 <div class="container my-5">
     <div id="productDetailsContainer" class="animate-fade-in-up" data-product-id="{{ product.id }}" data-ssr="true">
         <div class="row">
-            <!-- Image Carousel Component -->
+            <!-- Product Image (from MongoDB) -->
             <div class="col-lg-6 mb-4">
-                <div id="productCarousel" class="carousel slide border-0 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active" style="padding-top: 75%; position: relative;">
-                            <img src="{{ product.image or 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800' }}" class="d-block w-100 position-absolute top-0 start-0 h-100 object-fit-cover" alt="Main image">
-                        </div>
-                        <div class="carousel-item" style="padding-top: 75%; position: relative;">
-                            <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&q=80&w=800" class="d-block w-100 position-absolute top-0 start-0 h-100 object-fit-cover" alt="Alt image 1">
-                        </div>
-                        <div class="carousel-item" style="padding-top: 75%; position: relative;">
-                            <img src="https://images.unsplash.com/photo-1488459718432-36fa55702a7b?auto=format&fit=crop&q=80&w=800" class="d-block w-100 position-absolute top-0 start-0 h-100 object-fit-cover" alt="Alt image 2">
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                <div class="border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                    {% if product.image %}
+                        <img src="{{ product.image }}"
+                             alt="{{ product.productName }}"
+                             class="img-fluid w-100"
+                             style="height: 420px; object-fit: cover;"
+                             onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800'">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=800"
+                             alt="{{ product.productName }}"
+                             class="img-fluid w-100"
+                             style="height: 420px; object-fit: cover;">
+                    {% endif %}
                 </div>
             </div>
-            
+
+
             <!-- Specs & Add Controls -->
             <div class="col-lg-6">
                 <!-- Breadcrumbs -->

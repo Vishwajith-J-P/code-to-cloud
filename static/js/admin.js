@@ -45,22 +45,25 @@ function formatDate(dateStr) {
 // Load General Dashboard Metrics and Charts
 async function loadAdminDashboard(options = { limit: 5 }) {
     try {
-        const res = await fetch("/api/admin/dashboard");
+        const res = await fetch("/admin/analytics");
         if (res.status !== 200) return;
         const data = await res.json();
         const dbStats = data.dashboard;
 
         // Populate Summary Cards
-        document.getElementById("statCustomers").textContent = dbStats.totalCustomers;
-        document.getElementById("statVendors").textContent = dbStats.totalVendors;
-        document.getElementById("statProducts").textContent = dbStats.totalProducts;
-        document.getElementById("statOrders").textContent = dbStats.totalOrders;
-        document.getElementById("statRevenue").textContent = formatCurrency(dbStats.revenue);
+        const el = (id) => document.getElementById(id);
+        if (el("statCustomers")) el("statCustomers").textContent = dbStats.totalCustomers;
+        if (el("statVendors"))   el("statVendors").textContent   = dbStats.totalVendors;
+        if (el("statProducts")) el("statProducts").textContent  = dbStats.totalProducts;
+        if (el("statOrders"))   el("statOrders").textContent    = dbStats.totalOrders;
+        if (el("statRevenue"))  el("statRevenue").textContent   = formatCurrency(dbStats.revenue);
 
         // Render Charts
-        renderMonthlyRevenueChart(dbStats.monthlyRevenue);
-        renderProductCategoriesChart(dbStats.productCategories);
-        renderDailyOrdersChart(dbStats.dailyOrders);
+        renderMonthlyRevenueChart(dbStats.monthlyRevenue || []);
+        renderProductCategoriesChart(dbStats.productCategories || []);
+        renderDailyOrdersChart(dbStats.dailyOrders || []);
+        renderUserGrowthChart(dbStats.userGrowth || []);
+        renderAdminOrderStatusChart(dbStats.orderStatus || []);
 
         // Load recent tables on dashboard if not pre-rendered
         const dbTable = document.getElementById("dashboardUsersTable");
@@ -198,6 +201,92 @@ function renderDailyOrdersChart(data) {
                 },
                 x: { grid: { display: false } }
             }
+        }
+    });
+}
+
+// Render User Growth Chart (Line Chart - monthly registered users)
+function renderUserGrowthChart(data) {
+    const ctx = document.getElementById("userGrowthChart");
+    if (!ctx) return;
+
+    if (charts.userGrowth) charts.userGrowth.destroy();
+
+    const labels = data.map(d => d.label);
+    const values = data.map(d => d.value);
+
+    charts.userGrowth = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.length ? labels : ["No Data"],
+            datasets: [{
+                label: 'New Users',
+                data: values.length ? values : [0],
+                fill: true,
+                backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                borderColor: '#10b981',
+                borderWidth: 2.5,
+                tension: 0.4,
+                pointBackgroundColor: '#10b981',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.parsed.y} new users`
+                    }
+                }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+// Render Admin Order Status Distribution (Doughnut)
+function renderAdminOrderStatusChart(data) {
+    const ctx = document.getElementById("adminOrderStatusChart");
+    if (!ctx) return;
+
+    if (charts.adminOrderStatus) charts.adminOrderStatus.destroy();
+
+    const labels = data.map(d => d.status);
+    const values = data.map(d => d.count);
+    const statusColors = {
+        'Pending':          '#f59e0b',
+        'Confirmed':        '#3b82f6',
+        'Packed':           '#8b5cf6',
+        'Out For Delivery': '#06b6d4',
+        'Delivered':        '#10b981',
+        'Cancelled':        '#ef4444'
+    };
+    const bgColors = labels.map(l => statusColors[l] || '#94a3b8');
+
+    charts.adminOrderStatus = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels.length ? labels : ["No Orders"],
+            datasets: [{
+                data: values.length ? values : [1],
+                backgroundColor: bgColors,
+                hoverOffset: 4,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+            },
+            cutout: '60%'
         }
     });
 }

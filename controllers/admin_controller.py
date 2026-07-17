@@ -81,7 +81,38 @@ def get_admin_dashboard():
     ]
     cat_res = list(db.products.aggregate(category_pipeline))
     product_categories = [{"category": item["_id"] or "Uncategorized", "count": item["count"]} for item in cat_res]
-    
+
+    # User Growth Chart (registered users per month)
+    user_growth_pipeline = [
+        {"$group": {
+            "_id": {
+                "year": {"$year": "$createdAt"},
+                "month": {"$month": "$createdAt"}
+            },
+            "count": {"$sum": 1}
+        }},
+        {"$sort": {"_id.year": 1, "_id.month": 1}}
+    ]
+    user_growth_res = list(db.users.aggregate(user_growth_pipeline))
+    user_growth = []
+    for item in user_growth_res:
+        m = item["_id"]["month"]
+        y = item["_id"]["year"]
+        user_growth.append({
+            "label": f"{months_map.get(m, str(m))} {y}",
+            "value": item["count"]
+        })
+
+    # Order Status Distribution Chart
+    order_status_pipeline = [
+        {"$group": {
+            "_id": "$orderStatus",
+            "count": {"$sum": 1}
+        }}
+    ]
+    order_status_res = list(db.orders.aggregate(order_status_pipeline))
+    order_status = [{"status": item["_id"] or "Unknown", "count": item["count"]} for item in order_status_res]
+
     return jsonify({
         "dashboard": {
             "totalCustomers": total_customers,
@@ -91,7 +122,9 @@ def get_admin_dashboard():
             "revenue": float(revenue),
             "monthlyRevenue": monthly_revenue,
             "dailyOrders": daily_orders,
-            "productCategories": product_categories
+            "productCategories": product_categories,
+            "userGrowth": user_growth,
+            "orderStatus": order_status
         }
     }), 200
 

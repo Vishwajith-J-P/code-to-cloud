@@ -36,16 +36,70 @@ def get_vendor_dashboard():
     ]
     res = list(db.orders.aggregate(revenue_pipeline))
     revenue = res[0]["revenue"] if res else 0.0
-    
+
+    # 6. Monthly Sales Chart (group vendor orders by month/year)
+    months_map = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+                  7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
+    monthly_sales_pipeline = [
+        {"$match": {"vendorId": vendor_oid}},
+        {"$group": {
+            "_id": {
+                "year": {"$year": "$createdAt"},
+                "month": {"$month": "$createdAt"}
+            },
+            "revenue": {"$sum": "$totalAmount"}
+        }},
+        {"$sort": {"_id.year": 1, "_id.month": 1}}
+    ]
+    monthly_sales_res = list(db.orders.aggregate(monthly_sales_pipeline))
+    monthly_sales = []
+    for item in monthly_sales_res:
+        m = item["_id"]["month"]
+        y = item["_id"]["year"]
+        monthly_sales.append({
+            "label": f"{months_map.get(m, str(m))} {y}",
+            "value": float(item["revenue"])
+        })
+
+    # 7. Order Status Distribution Chart
+    status_pipeline = [
+        {"$match": {"vendorId": vendor_oid}},
+        {"$group": {
+            "_id": "$orderStatus",
+            "count": {"$sum": 1}
+        }}
+    ]
+    status_res = list(db.orders.aggregate(status_pipeline))
+    order_status = [{"status": item["_id"] or "Unknown", "count": item["count"]} for item in status_res]
+
+    # 8. Top 5 Selling Products by total quantity sold
+    top_products_pipeline = [
+        {"$match": {"vendorId": vendor_oid}},
+        {"$unwind": "$items"},
+        {"$group": {
+            "_id": "$items.productId",
+            "productName": {"$first": "$items.productName"},
+            "totalQty": {"$sum": "$items.quantity"}
+        }},
+        {"$sort": {"totalQty": -1}},
+        {"$limit": 5}
+    ]
+    top_res = list(db.orders.aggregate(top_products_pipeline))
+    top_products = [{"name": item["productName"], "qty": item["totalQty"]} for item in top_res]
+
     return jsonify({
         "dashboard": {
             "totalProducts": total_products,
             "totalOrders": total_orders,
             "pendingOrders": pending_orders,
             "completedOrders": completed_orders,
-            "revenue": float(revenue)
+            "revenue": float(revenue),
+            "monthlySales": monthly_sales,
+            "orderStatus": order_status,
+            "topProducts": top_products
         }
     }), 200
+
 
 def get_vendor_products():
     """

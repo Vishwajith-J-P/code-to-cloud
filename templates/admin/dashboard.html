@@ -83,8 +83,8 @@
     </div>
 </div>
 
-<!-- Charts Row -->
-<div class="row g-4 mb-5 animate-fade-in-up">
+<!-- Charts Row 1: Revenue + Categories -->
+<div class="row g-4 mb-4 animate-fade-in-up">
     <!-- Monthly Revenue -->
     <div class="col-12 col-lg-8">
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
@@ -103,7 +103,32 @@
             </div>
         </div>
     </div>
-    <!-- Daily Orders -->
+</div>
+
+<!-- Charts Row 2: User Growth + Order Status -->
+<div class="row g-4 mb-4 animate-fade-in-up">
+    <!-- User Growth -->
+    <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-dark mb-4">User Registration Growth</h5>
+            <div style="height: 260px; position: relative;">
+                <canvas id="userGrowthChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Order Status Distribution -->
+    <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-dark mb-4">Order Status Distribution</h5>
+            <div style="height: 260px; position: relative;">
+                <canvas id="adminOrderStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 3: Daily Orders -->
+<div class="row g-4 mb-5 animate-fade-in-up">
     <div class="col-12">
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <h5 class="fw-bold text-dark mb-4">Daily Order Volatility (Last 30 Days)</h5>

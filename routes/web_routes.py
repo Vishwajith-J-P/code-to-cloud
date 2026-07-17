@@ -300,3 +300,30 @@ def vendor_login():
     if current_user.is_authenticated and getattr(current_user, 'role', None) == 'vendor':
         return redirect('/vendor/dashboard')
     return render_template("vendor/login.html")
+
+# -------------------------------------------------------
+# Analytics JSON Endpoints (for Chart.js dynamic loading)
+# -------------------------------------------------------
+
+@web_bp.route("/vendor/analytics")
+@vendor_required
+def vendor_analytics():
+    """
+    GET /vendor/analytics
+    Returns vendor-specific analytics data as JSON for Chart.js.
+    Proxies the existing vendor dashboard API controller.
+    """
+    from controllers.vendor_controller import get_vendor_dashboard
+    return get_vendor_dashboard()
+
+@web_bp.route("/admin/analytics")
+@admin_required
+def admin_analytics():
+    """
+    GET /admin/analytics
+    Returns platform-wide analytics data as JSON for Chart.js.
+    Proxies the existing admin dashboard API controller.
+    """
+    from controllers.admin_controller import get_admin_dashboard
+    return get_admin_dashboard()
+
