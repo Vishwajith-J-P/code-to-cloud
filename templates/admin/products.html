@@ -42,7 +42,7 @@
                                 </div>
                             </td>
                             <td>{{ p.category }}</td>
-                            <td class="fw-semibold text-dark">${{ "%.2f"|format(p.price) }}</td>
+                            <td class="fw-semibold text-dark">₹{{ "%.2f"|format(p.price) }}</td>
                             <td>
                                 {% if p.stock > 0 %}
                                     <span class="text-dark fw-medium">{{ p.stock }}</span>
@@ -114,7 +114,7 @@
                             <select class="form-select" id="editProdCategory" required></select>
                         </div>
                         <div class="col-6">
-                            <label for="editProdPrice" class="form-label text-dark fw-medium fs-7">Price ($)</label>
+                            <label for="editProdPrice" class="form-label text-dark fw-medium fs-7">Price (₹)</label>
                             <input type="number" step="0.01" class="form-control" id="editProdPrice" required>
                         </div>
                     </div>

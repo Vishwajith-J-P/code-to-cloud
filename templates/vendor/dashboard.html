@@ -59,7 +59,11 @@
                 </div>
                 <div>
                     <h6 class="text-muted fw-normal mb-1">Total Revenue</h6>
+<<<<<<< HEAD
                     <h3 class="mb-0 fw-bold text-dark" id="vendorStatRevenue">${{ "%.2f"|format(revenue) }}</h3>
+=======
+                    <h3 class="mb-0 fw-bold text-dark">₹{{ "%.2f"|format(revenue) }}</h3>
+>>>>>>> ca5feb6c91cb43e247b09ad62e91b652b51bc846
                 </div>
             </div>
         </div>
@@ -139,7 +143,7 @@
                                 <td class="ps-4 py-3"><span class="fw-medium text-dark">{{ order.orderNumber }}</span></td>
                                 <td class="py-3 text-truncate" style="max-width: 250px;">{{ order.shippingAddress }}</td>
                                 <td class="py-3 text-muted">{{ order.createdAt[:10] if order.createdAt else '' }}</td>
-                                <td class="py-3 fw-semibold">${{ "%.2f"|format(order.totalAmount) }}</td>
+                                <td class="py-3 fw-semibold">₹{{ "%.2f"|format(order.totalAmount) }}</td>
                                 <td class="py-3"><span class="badge {{ badgeClass }} rounded-pill px-3 py-2 fw-medium">{{ order.orderStatus }}</span></td>
                             </tr>
                         {% endfor %}
@@ -156,5 +160,48 @@
 {% endblock %}
 
 {% block scripts %}
+<<<<<<< HEAD
 <script src="/static/js/vendor.js"></script>
+=======
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Initialize simple charts
+        const ctxSales = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(ctxSales, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Store Revenue (₹)',
+                    data: [1200, 1900, 3000, 5000, 4000, 3000, 4500, 5200, 6000, 5500, 7000, 8500],
+                    borderColor: '#4f46e5',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(79, 70, 229, 0.05)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        const ctxProd = document.getElementById('topProductsChart').getContext('2d');
+        new Chart(ctxProd, {
+            type: 'doughnut',
+            data: {
+                labels: ['Groceries', 'Fruits & Vegetables', 'Bakery'],
+                datasets: [{
+                    data: [55, 30, 15],
+                    backgroundColor: ['#4f46e5', '#10b981', '#f59e0b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+</script>
+>>>>>>> ca5feb6c91cb43e247b09ad62e91b652b51bc846
 {% endblock %}

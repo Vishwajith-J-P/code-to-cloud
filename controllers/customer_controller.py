@@ -311,7 +311,7 @@ def update_cart():
             return jsonify({"error": "Product not found."}), 404
             
         if quantity > product.get("stock", 0):
-            return jsonify({"error": f"Quantity ({quantity}) exceeds available stock ({product.get('stock')})."}), 400
+            quantity = product.get("stock", 0)
             
         # Find item and update
         found = False

@@ -39,7 +39,7 @@
                 <h1 class="display-6 fw-bold mb-2 text-dark">{{ product.productName }}</h1>
                 
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <span class="fs-4 text-primary fw-bold">${{ "%.2f"|format(product.price) }}</span>
+                    <span class="fs-4 text-primary fw-bold">₹{{ "%.2f"|format(product.price) }}</span>
                     {% if product.isAvailable and product.stock > 0 %}
                         <span class="badge bg-success-subtle text-success py-2 px-3 fs-6 rounded-pill">In Stock ({{ product.stock }})</span>
                     {% else %}

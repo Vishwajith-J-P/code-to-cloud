@@ -47,7 +47,7 @@
                                 <div class="fs-8 mt-1 text-muted">{{ o.paymentStatus }}</div>
                             </td>
                             <td><span class="badge-order {{ badgeClass }}">{{ o.orderStatus }}</span></td>
-                            <td class="fw-bold text-dark">${{ "%.2f"|format(o.totalAmount) }}</td>
+                            <td class="fw-bold text-dark">₹{{ "%.2f"|format(o.totalAmount) }}</td>
                             <td class="text-end">
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-light text-secondary" onclick="viewOrder('{{ o.id }}')" title="View details"><i class="bi bi-eye"></i></button>

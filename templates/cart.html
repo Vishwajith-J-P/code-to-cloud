@@ -50,7 +50,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-center fw-semibold">${{ "%.2f"|format(item.product.price) }}</td>
+                                    <td class="text-center fw-semibold">₹{{ "%.2f"|format(item.product.price) }}</td>
                                     <td class="text-center">
                                         <div class="input-group input-group-sm mx-auto" style="width: 110px;">
                                             <button class="btn btn-outline-secondary" type="button"
@@ -61,7 +61,7 @@
                                                 onclick="changeQuantity('{{ item.product.id }}', '{{ item.quantity + 1 }}', '{{ item.product.stock }}')">+</button>
                                         </div>
                                     </td>
-                                    <td class="text-end fw-bold text-primary">${{ "%.2f"|format(item.total) }}</td>
+                                    <td class="text-end fw-bold text-primary">₹{{ "%.2f"|format(item.total) }}</td>
                                     <td class="text-end">
                                         <button class="btn btn-link text-danger p-0"
                                             onclick="removeCartItem('{{ item.product.id }}')">
@@ -82,16 +82,16 @@
                     <h4 class="fw-bold mb-4">Summary</h4>
                     <div class="d-flex justify-content-between mb-3 text-muted">
                         <span>Items Subtotal</span>
-                        <span class="fw-semibold">${{ "%.2f"|format(subtotal) }}</span>
+                        <span class="fw-semibold">₹{{ "%.2f"|format(subtotal) }}</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 text-muted">
                         <span>Estimated Shipping</span>
-                        <span class="text-success fw-medium">${{ "%.2f"|format(delivery) }}</span>
+                        <span class="text-success fw-medium">₹{{ "%.2f"|format(delivery) }}</span>
                     </div>
                     <hr class="text-slate-200">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <span class="fw-bold fs-5">Total Price</span>
-                        <span class="fw-bold fs-4 text-primary">${{ "%.2f"|format(total) }}</span>
+                        <span class="fw-bold fs-4 text-primary">₹{{ "%.2f"|format(total) }}</span>
                     </div>
                     <div class="d-grid">
                         <a href="/checkout" class="btn btn-primary py-3 rounded-3 fw-semibold fs-6">

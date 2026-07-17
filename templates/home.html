@@ -60,7 +60,7 @@
                                 <p class="product-desc text-truncate-2">{{ p.description }}</p>
                                 <div class="mt-auto">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="product-price">${{ "%.2f"|format(p.price) }}</span>
+                                        <span class="product-price">₹{{ "%.2f"|format(p.price) }}</span>
                                         {% if p.isAvailable and p.stock > 0 %}
                                             <span class="badge bg-success-subtle text-success product-stock">In Stock ({{ p.stock }})</span>
                                         {% else %}
