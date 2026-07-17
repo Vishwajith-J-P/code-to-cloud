@@ -36,3 +36,47 @@ def create_cart_doc(user_id):
         "totalPrice": 0.0,
         "updatedAt": datetime.datetime.utcnow()
     }
+
+CART_SCHEMA = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["userId", "items", "totalPrice", "updatedAt"],
+        "properties": {
+            "userId": {
+                "bsonType": "objectId",
+                "description": "Must be an ObjectId and is required"
+            },
+            "items": {
+                "bsonType": "array",
+                "description": "Must be an array of cart items",
+                "items": {
+                    "bsonType": "object",
+                    "required": ["productId", "quantity", "price"],
+                    "properties": {
+                        "productId": {
+                            "bsonType": "objectId",
+                            "description": "Must be an ObjectId and is required"
+                        },
+                        "quantity": {
+                            "bsonType": "int",
+                            "description": "Must be an integer and is required"
+                        },
+                        "price": {
+                            "bsonType": "double",
+                            "description": "Must be a double and is required"
+                        }
+                    }
+                }
+            },
+            "totalPrice": {
+                "bsonType": "double",
+                "description": "Must be a double and is required"
+            },
+            "updatedAt": {
+                "bsonType": "date",
+                "description": "Must be a date and is required"
+            }
+        }
+    }
+}
+

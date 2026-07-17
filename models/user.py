@@ -63,3 +63,46 @@ def verify_password(stored_password, provided_password):
     Checks the stored hashed password against the user's provided password.
     """
     return check_password_hash(stored_password, provided_password)
+
+USER_SCHEMA = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["fullName", "email", "password", "phone", "address", "role", "isActive", "createdAt"],
+        "properties": {
+            "fullName": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "email": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "password": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "phone": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "address": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "role": {
+                "bsonType": "string",
+                "enum": ["customer", "vendor", "admin"],
+                "description": "Must be one of customer, vendor, admin"
+            },
+            "isActive": {
+                "bsonType": "bool",
+                "description": "Must be a boolean and is required"
+            },
+            "createdAt": {
+                "bsonType": "date",
+                "description": "Must be a date and is required"
+            }
+        }
+    }
+}
+

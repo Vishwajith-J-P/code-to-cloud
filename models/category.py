@@ -20,3 +20,21 @@ def create_category_doc(category_name, image=""):
         "categoryName": category_name.strip(),
         "image": image.strip() if image else ""
     }
+
+CATEGORY_SCHEMA = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["categoryName"],
+        "properties": {
+            "categoryName": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "image": {
+                "bsonType": "string",
+                "description": "Must be a string"
+            }
+        }
+    }
+}
+

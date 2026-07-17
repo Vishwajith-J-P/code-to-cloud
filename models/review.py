@@ -27,3 +27,30 @@ def create_review_doc(product_id, user_id, rating, review_text):
         "review": review_text.strip(),
         "createdAt": datetime.datetime.utcnow()
     }
+
+REVIEW_SCHEMA = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["productId", "userId", "rating", "review", "createdAt"],
+        "properties": {
+            "productId": {
+                "bsonType": "objectId"
+            },
+            "userId": {
+                "bsonType": "objectId"
+            },
+            "rating": {
+                "bsonType": "int",
+                "minimum": 1,
+                "maximum": 5
+            },
+            "review": {
+                "bsonType": "string"
+            },
+            "createdAt": {
+                "bsonType": "date"
+            }
+        }
+    }
+}
+

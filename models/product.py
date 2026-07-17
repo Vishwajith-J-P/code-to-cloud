@@ -39,3 +39,53 @@ def create_product_doc(vendor_id, product_name, description, category, price, st
         "createdAt": now,
         "updatedAt": now
     }
+
+PRODUCT_SCHEMA = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["vendorId", "productName", "category", "price", "stock", "isAvailable", "createdAt", "updatedAt"],
+        "properties": {
+            "vendorId": {
+                "bsonType": "objectId",
+                "description": "Must be an ObjectId and is required"
+            },
+            "productName": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "description": {
+                "bsonType": "string",
+                "description": "Must be a string"
+            },
+            "category": {
+                "bsonType": "string",
+                "description": "Must be a string and is required"
+            },
+            "price": {
+                "bsonType": "double",
+                "description": "Must be a double and is required"
+            },
+            "stock": {
+                "bsonType": "int",
+                "description": "Must be an integer and is required"
+            },
+            "image": {
+                "bsonType": "string",
+                "description": "Must be a string"
+            },
+            "isAvailable": {
+                "bsonType": "bool",
+                "description": "Must be a boolean and is required"
+            },
+            "createdAt": {
+                "bsonType": "date",
+                "description": "Must be a date and is required"
+            },
+            "updatedAt": {
+                "bsonType": "date",
+                "description": "Must be a date and is required"
+            }
+        }
+    }
+}
+

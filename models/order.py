@@ -68,3 +68,73 @@ def create_order_doc(user_id, vendor_id, items, subtotal, delivery_charge, payme
         "shippingAddress": shipping_address.strip(),
         "createdAt": now
     }
+
+ORDER_SCHEMA = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["orderNumber", "userId", "vendorId", "items", "subtotal", "deliveryCharge", "totalAmount", "paymentMethod", "paymentStatus", "orderStatus", "shippingAddress", "createdAt"],
+        "properties": {
+            "orderNumber": {
+                "bsonType": "string",
+                "pattern": "^ORD-\\d{8}-\\d{6}$",
+                "description": "Must be an ORD-YYYYMMDD-XXXXXX format and is required"
+            },
+            "userId": {
+                "bsonType": "objectId",
+                "description": "Must be an ObjectId and is required"
+            },
+            "vendorId": {
+                "bsonType": "objectId",
+                "description": "Must be an ObjectId and is required"
+            },
+            "items": {
+                "bsonType": "array",
+                "items": {
+                    "bsonType": "object",
+                    "required": ["productId", "quantity", "price", "productName"],
+                    "properties": {
+                        "productId": {
+                            "bsonType": "objectId"
+                        },
+                        "quantity": {
+                            "bsonType": "int"
+                        },
+                        "price": {
+                            "bsonType": "double"
+                        },
+                        "productName": {
+                            "bsonType": "string"
+                        }
+                    }
+                }
+            },
+            "subtotal": {
+                "bsonType": "double"
+            },
+            "deliveryCharge": {
+                "bsonType": "double"
+            },
+            "totalAmount": {
+                "bsonType": "double"
+            },
+            "paymentMethod": {
+                "bsonType": "string"
+            },
+            "paymentStatus": {
+                "bsonType": "string",
+                "enum": ["Pending", "Completed", "Failed"]
+            },
+            "orderStatus": {
+                "bsonType": "string",
+                "enum": ["Pending", "Confirmed", "Packed", "Out For Delivery", "Delivered", "Cancelled"]
+            },
+            "shippingAddress": {
+                "bsonType": "string"
+            },
+            "createdAt": {
+                "bsonType": "date"
+            }
+        }
+    }
+}
+

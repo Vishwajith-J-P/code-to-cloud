@@ -59,17 +59,14 @@ def create_app():
         app.logger.error(f"Server Error: {str(e)}")
         return jsonify({"error": "Internal server error. Please try again later."}), 500
         
-    # Create required database indexes on startup
+    # Create required database schemas and indexes on startup
     with app.app_context():
         try:
-            db = mongo.db
-            # Enforce unique email constraint at MongoDB level
-            db.users.create_index("email", unique=True)
-            # Enforce unique category constraint at MongoDB level
-            db.categories.create_index("categoryName", unique=True)
-            print("Successfully verified/created unique database indexes.")
+            from models.db_init import setup_database
+            setup_database(mongo.db)
+            print("Successfully verified and configured MongoDB schemas and indexes.")
         except Exception as err:
-            app.logger.warning(f"Could not build indexes during initialization: {err}")
+            app.logger.warning(f"Could not initialize database schemas: {err}")
             
     return app
 
