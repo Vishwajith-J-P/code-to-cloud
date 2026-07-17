@@ -37,11 +37,16 @@ def create_app():
     from routes.customer_routes import customer_bp
     from routes.vendor_routes import vendor_bp
     from routes.admin_routes import admin_bp
+    from routes.web_routes import web_bp
     
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(customer_bp)
-    app.register_blueprint(vendor_bp)
-    app.register_blueprint(admin_bp)
+    # JSON API routes
+    app.register_blueprint(auth_bp, url_prefix='/api')
+    app.register_blueprint(customer_bp, url_prefix='/api')
+    app.register_blueprint(vendor_bp, url_prefix='/api')
+    app.register_blueprint(admin_bp, url_prefix='/api')
+    
+    # HTML template routes
+    app.register_blueprint(web_bp)
     
     # Global HTTP error handlers
     @app.errorhandler(404)
