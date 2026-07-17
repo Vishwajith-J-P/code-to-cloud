@@ -1,110 +1,70 @@
-{% extends "admin/admin_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Manage Categories - HyperLocal Admin{% endblock %}
 
-{% block nav_categories %}active{% endblock %}
+{% block active_breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Product Categories</li>
+{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
     <div>
-        <h2 class="fw-bold mb-1">Category Catalog</h2>
-        <p class="text-muted mb-0">Manage product categories, customize banner images, and track item metrics.</p>
+        <h2 class="fw-bold mb-1">Category Management</h2>
+        <p class="text-muted mb-0">Create new classification tags, view product counts, and delete existing items.</p>
     </div>
     <div>
-        <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#categoryCreateModal">
+        <button class="btn btn-primary btn-sm d-flex align-items-center gap-1 rounded-3 px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
             <i class="bi bi-plus-lg"></i>
-            <span>Add New Category</span>
+            <span>Add Category</span>
         </button>
     </div>
 </div>
 
 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white animate-fade-in-up">
     <div class="table-responsive">
-        <table class="table align-middle table-hover" id="categoriesPageTable">
-            <thead class="table-light">
+        <table class="table align-middle table-hover fs-7 w-100" id="categoriesPageTable">
+            <thead class="table-light text-muted">
                 <tr>
-                    <th>Category details</th>
-                    <th>Name</th>
-                    <th>Product Count</th>
+                    <th>Category Name</th>
+                    <th>Linked Products Count</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-4">Loading category definitions...</td>
-                </tr>
+                {% if categories %}
+                    {% for c in categories %}
+                        <tr id="row-cat-{{ c.id }}">
+                            <td><div class="fw-semibold text-dark">{{ c.categoryName }}</div></td>
+                            <td><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ c.productCount }} products</span></td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-light text-danger btn-delete-category" data-cat-id="{{ c.id }}" title="Delete"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Category Modals -->
-<div class="modal fade" id="categoryViewModal" tabindex="-1" aria-hidden="true">
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Category Information</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center" id="categoryViewBody">
-                <!-- Populated dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="categoryCreateModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="categoryCreateForm">
+            <form id="addCategoryForm">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Create Product Category</h5>
+                    <h5 class="modal-title fw-bold text-dark">Add New Category</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="createCatName" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" id="createCatName" placeholder="e.g. Fruits & Vegetables" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="createCatImage" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="createCatImage" placeholder="https://images.unsplash.com/photo-...">
+                        <label for="newCategoryName" class="form-label text-dark fw-medium fs-7">Category Name</label>
+                        <input type="text" class="form-control" id="newCategoryName" placeholder="e.g. Organic Produce" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Category</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="categoryEditModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="categoryEditForm">
-                <input type="hidden" id="editCatId">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Edit Category Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="editCatName" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" id="editCatName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editCatImage" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="editCatImage">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Create Category</button>
                 </div>
             </form>
         </div>
@@ -116,7 +76,68 @@
 <script src="/static/js/admin.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        loadCategoriesPage();
+        // Initialize DataTables
+        $('#categoriesPageTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            language: {
+                searchPlaceholder: "Search categories...",
+                search: ""
+            }
+        });
+
+        // Form submit
+        const addForm = document.getElementById("addCategoryForm");
+        if (addForm) {
+            addForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const categoryName = document.getElementById("newCategoryName").value.trim();
+                try {
+                    const res = await fetch("/api/admin/category", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ categoryName })
+                    });
+                    if (res.status === 201) {
+                        showToast("Category created successfully", "success");
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1200);
+                    } else {
+                        const data = await res.json();
+                        showToast(data.error || "Failed to create category", "danger");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast("Error processing request", "danger");
+                }
+            };
+        }
+
+        // Delete triggers
+        document.querySelectorAll(".btn-delete-category").forEach(btn => {
+            btn.onclick = async () => {
+                const catId = btn.dataset.catId;
+                if (confirm("Are you sure you want to delete this category?")) {
+                    try {
+                        const res = await fetch(`/api/admin/category/${catId}`, {
+                            method: "DELETE"
+                        });
+                        if (res.status === 200) {
+                            showToast("Category deleted successfully", "success");
+                            const row = document.getElementById(`row-cat-${catId}`);
+                            if (row) row.remove();
+                        } else {
+                            const data = await res.json();
+                            showToast(data.error || "Failed to delete category", "danger");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showToast("Error deleting category", "danger");
+                    }
+                }
+            };
+        });
     });
 </script>
 {% endblock %}

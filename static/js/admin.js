@@ -62,8 +62,11 @@ async function loadAdminDashboard(options = { limit: 5 }) {
         renderProductCategoriesChart(dbStats.productCategories);
         renderDailyOrdersChart(dbStats.dailyOrders);
 
-        // Load recent tables on dashboard
-        loadDashboardTables(options.limit);
+        // Load recent tables on dashboard if not pre-rendered
+        const dbTable = document.getElementById("dashboardUsersTable");
+        if (!dbTable || dbTable.dataset.ssr !== "true") {
+            loadDashboardTables(options.limit);
+        }
         
         // Sync button listener
         const syncBtn = document.getElementById("refreshStatsBtn");
@@ -377,6 +380,15 @@ function deleteCustomer(id) {
 }
 
 async function loadCustomersPage() {
+    const table = document.getElementById("customersPageTable");
+    if (table) {
+        if (table.dataset.loaded === "true") {
+            window.location.reload();
+        } else {
+            table.dataset.loaded = "true";
+        }
+        return;
+    }
     try {
         const res = await fetch("/api/admin/users");
         if (res.status !== 200) return;
@@ -565,6 +577,15 @@ function deleteVendor(id) {
 }
 
 async function loadVendorsPage() {
+    const table = document.getElementById("vendorsPageTable");
+    if (table) {
+        if (table.dataset.loaded === "true") {
+            window.location.reload();
+        } else {
+            table.dataset.loaded = "true";
+        }
+        return;
+    }
     try {
         const res = await fetch("/api/admin/vendors");
         if (res.status !== 200) return;
@@ -773,6 +794,15 @@ function deleteProduct(id) {
 }
 
 async function loadProductsPage() {
+    const table = document.getElementById("productsPageTable");
+    if (table) {
+        if (table.dataset.loaded === "true") {
+            window.location.reload();
+        } else {
+            table.dataset.loaded = "true";
+        }
+        return;
+    }
     try {
         // Fetch categories first to populate filter
         const cRes = await fetch("/api/categories");
@@ -1034,6 +1064,15 @@ if (orderForm) {
 }
 
 async function loadOrdersPage() {
+    const table = document.getElementById("ordersPageTable");
+    if (table) {
+        if (table.dataset.loaded === "true") {
+            window.location.reload();
+        } else {
+            table.dataset.loaded = "true";
+        }
+        return;
+    }
     try {
         const res = await fetch("/api/admin/orders");
         if (res.status !== 200) return;
@@ -1104,6 +1143,15 @@ function renderOrdersPageRows(orders) {
 // CATEGORY RENDER & ACTIONS
 // ----------------------------------------------------
 async function loadCategoriesPage() {
+    const table = document.getElementById("categoriesPageTable");
+    if (table) {
+        if (table.dataset.loaded === "true") {
+            window.location.reload();
+        } else {
+            table.dataset.loaded = "true";
+        }
+        return;
+    }
     try {
         const res = await fetch("/api/admin/categories");
         if (res.status !== 200) return;

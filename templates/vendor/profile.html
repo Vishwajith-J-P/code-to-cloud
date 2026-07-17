@@ -1,22 +1,22 @@
-{% extends "vendor/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Vendor Profile{% endblock %}
-{% block page_title %}Store Profile{% endblock %}
+{% block title %}Store Profile - Vendor Portal{% endblock %}
+
+{% block active_breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Store Settings</li>
+{% endblock %}
 
 {% block content %}
-<div class="row g-4">
+<div class="row g-4 fs-7">
     <!-- Profile Sidebar -->
     <div class="col-12 col-lg-4 col-xl-3">
-        <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
             <div class="card-body text-center p-4">
                 <div class="position-relative d-inline-block mb-3">
-                    <img src="https://ui-avatars.com/api/?name=Premium+Store&background=0d6efd&color=fff&size=120" alt="Store Logo" class="rounded-circle shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">
-                    <button class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 shadow" style="width: 32px; height: 32px; padding: 0;">
-                        <i class="bi bi-camera"></i>
-                    </button>
+                    <img src="https://ui-avatars.com/api/?name={{ user.fullName or 'Vendor' }}&background=0d6efd&color=fff&size=120" alt="Store Logo" class="rounded-circle shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">
                 </div>
-                <h5 class="fw-bold text-dark mb-1">Premium Electronics</h5>
-                <p class="text-muted fs-7 mb-3">Member since Oct 2024</p>
+                <h5 class="fw-bold text-dark mb-1">{{ user.fullName }}</h5>
+                <p class="text-muted fs-8 mb-3">Member since 2026</p>
                 
                 <div class="d-flex justify-content-center gap-2 mb-3">
                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-medium">
@@ -27,15 +27,11 @@
                 
                 <div class="d-flex justify-content-between text-start mb-2 fs-7">
                     <span class="text-muted">Rating</span>
-                    <span class="fw-semibold text-warning"><i class="bi bi-star-fill me-1"></i> 4.8 (124 reviews)</span>
+                    <span class="fw-semibold text-warning"><i class="bi bi-star-fill me-1"></i> 4.9 (48 reviews)</span>
                 </div>
                 <div class="d-flex justify-content-between text-start mb-2 fs-7">
-                    <span class="text-muted">Total Sales</span>
-                    <span class="fw-semibold text-dark">1,248 items</span>
-                </div>
-                <div class="d-flex justify-content-between text-start fs-7">
                     <span class="text-muted">Response Rate</span>
-                    <span class="fw-semibold text-success">98%</span>
+                    <span class="fw-semibold text-success">100%</span>
                 </div>
             </div>
         </div>
@@ -43,88 +39,39 @@
 
     <!-- Profile Settings Form -->
     <div class="col-12 col-lg-8 col-xl-9">
-        <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
             <div class="card-header bg-white border-bottom py-3 px-4">
                 <h6 class="mb-0 fw-bold text-dark">Store Details</h6>
             </div>
             <div class="card-body p-4">
-                <form action="/vendor/profile/update" method="POST">
+                <form>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-medium text-secondary fs-7">Store Name</label>
-                            <input type="text" class="form-control" value="Premium Electronics">
+                            <input type="text" class="form-control" value="{{ user.fullName }}" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium text-secondary fs-7">Contact Email</label>
-                            <input type="email" class="form-control" value="contact@premiumelectronics.com">
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium text-secondary fs-7">Phone Number</label>
-                            <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                            <input type="tel" class="form-control" value="{{ user.phone }}" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium text-secondary fs-7">Business Category</label>
-                            <select class="form-select">
-                                <option value="electronics" selected>Electronics & Gadgets</option>
-                                <option value="groceries">Groceries & Food</option>
-                                <option value="clothing">Clothing & Apparel</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-medium text-secondary fs-7">Store Description</label>
-                            <textarea class="form-control" rows="4">Top destination for premium electronics, latest gadgets, and smart home devices. We offer fast shipping and exceptional customer service.</textarea>
+                            <label class="form-label fw-medium text-secondary fs-7">Business Type</label>
+                            <input type="text" class="form-control" value="Local Storefront Partner" readonly>
                         </div>
                         
                         <div class="col-12 mt-4">
-                            <h6 class="fw-bold text-dark mb-3">Business Address</h6>
+                            <h6 class="fw-bold text-dark mb-3">Registered Store Address</h6>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-medium text-secondary fs-7">Street Address</label>
-                            <input type="text" class="form-control" value="123 Tech Boulevard, Suite 400">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-medium text-secondary fs-7">City</label>
-                            <input type="text" class="form-control" value="San Francisco">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-medium text-secondary fs-7">State/Province</label>
-                            <input type="text" class="form-control" value="CA">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-medium text-secondary fs-7">Zip/Postal Code</label>
-                            <input type="text" class="form-control" value="94107">
-                        </div>
-                        
-                        <div class="col-12 mt-4 text-end">
-                            <button type="button" class="btn btn-light shadow-sm text-secondary fw-medium px-4 me-2">Discard Changes</button>
-                            <button type="submit" class="btn btn-primary shadow-sm fw-medium px-4">Save Profile</button>
+                            <label class="form-label fw-medium text-secondary fs-7">Address Location</label>
+                            <textarea class="form-control" rows="3" readonly>{{ user.address }}</textarea>
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
-        
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-white border-bottom py-3 px-4">
-                <h6 class="mb-0 fw-bold text-dark">Security Settings</h6>
-            </div>
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
-                    <div>
-                        <h6 class="fw-semibold text-dark mb-1">Change Password</h6>
-                        <p class="text-muted fs-7 mb-0">Update your account password for enhanced security.</p>
-                    </div>
-                    <button class="btn btn-sm btn-outline-primary fw-medium">Update</button>
-                </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="fw-semibold text-dark mb-1">Two-Factor Authentication</h6>
-                        <p class="text-muted fs-7 mb-0">Add an extra layer of security to your vendor account.</p>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

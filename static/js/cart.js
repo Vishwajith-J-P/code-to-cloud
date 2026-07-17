@@ -4,27 +4,31 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Cart Page
-    if (document.getElementById("cartContainer")) {
+    const cartContainer = document.getElementById("cartContainer");
+    if (cartContainer && cartContainer.dataset.ssr !== "true") {
         loadCartDetails();
     }
     
     // 2. Checkout Page
-    if (document.getElementById("checkoutSummary")) {
+    const checkoutSummary = document.getElementById("checkoutSummary");
+    if (checkoutSummary && checkoutSummary.dataset.ssr !== "true") {
         loadCheckoutSummary();
-        
-        const checkoutForm = document.getElementById("checkoutForm");
-        if (checkoutForm) {
-            checkoutForm.addEventListener("submit", handleCheckoutSubmit);
-        }
+    }
+    
+    const checkoutForm = document.getElementById("checkoutForm");
+    if (checkoutForm) {
+        checkoutForm.addEventListener("submit", handleCheckoutSubmit);
     }
     
     // 3. Orders Page
-    if (document.getElementById("ordersContainer")) {
+    const ordersContainer = document.getElementById("ordersContainer");
+    if (ordersContainer && ordersContainer.dataset.ssr !== "true") {
         loadOrderHistory();
     }
     
     // 4. Profile Page
-    if (document.getElementById("profileContainer")) {
+    const profileContainer = document.getElementById("profileContainer");
+    if (profileContainer && profileContainer.dataset.ssr !== "true") {
         loadUserProfile();
     }
 });

@@ -1,20 +1,72 @@
 {% extends "base.html" %}
 
-{% block title %}Hyperlocal Marketplace - My Orders{% endblock %}
+{% block title %}My Orders - Hyperlocal Marketplace{% endblock %}
 
 {% block content %}
 <div class="container my-5">
+    <!-- Breadcrumbs component -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Orders</li>
+        </ol>
+    </nav>
+
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <h2 class="fw-bold mb-4 animate-fade-in-up">Order History</h2>
-            <div id="ordersContainer" class="animate-fade-in-up" style="animation-delay: 0.1s;">
-                <!-- Dynamic order items loaded via JavaScript -->
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading orders...</span>
+            <div id="ordersContainer" class="animate-fade-in-up" style="animation-delay: 0.1s;" data-ssr="true">
+                {% if orders %}
+                    {% for order in orders %}
+                        {% set status = order.orderStatus %}
+                        {% set badgeClass = "badge-pending" %}
+                        {% if status == "Confirmed" %}{% set badgeClass = "badge-confirmed" %}{% endif %}
+                        {% if status == "Packed" %}{% set badgeClass = "badge-packed" %}{% endif %}
+                        {% if status == "Out For Delivery" %}{% set badgeClass = "badge-delivering" %}{% endif %}
+                        {% if status == "Delivered" %}{% set badgeClass = "badge-delivered" %}{% endif %}
+                        {% if status == "Cancelled" %}{% set badgeClass = "badge-cancelled" %}{% endif %}
+                        
+                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3 gap-2">
+                                <div>
+                                    <span class="fw-bold text-dark fs-5">{{ order.orderNumber }}</span>
+                                    <div class="text-muted fs-7 mt-1">{{ order.createdAt[:10] if order.createdAt else '' }}</div>
+                                </div>
+                                <span class="badge-order {{ badgeClass }}">{{ order.orderStatus }}</span>
+                            </div>
+                            
+                            <!-- Items List -->
+                            <div class="py-2 border-bottom mb-3">
+                                {% for item in order.items %}
+                                    <div class="d-flex justify-content-between align-items-center mb-2 fs-7">
+                                        <span>{{ item.productName }} (x{{ item.quantity }})</span>
+                                        <span class="text-muted">${{ "%.2f"|format(item.price * item.quantity) }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Summary Details Row -->
+                            <div class="row pt-2 text-muted fs-7">
+                                <div class="col-md-6 mb-2 mb-md-0">
+                                    <strong>Payment Option:</strong> {{ order.paymentMethod }} ({{ order.paymentStatus }})<br>
+                                    <strong>Shipping Address:</strong> {{ order.shippingAddress }}
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <div class="fs-7 text-muted mb-1">Subtotal: ${{ "%.2f"|format(order.subtotal) }}</div>
+                                    <div class="fs-7 text-muted mb-2">Delivery Charge: ${{ "%.2f"|format(order.deliveryCharge) }}</div>
+                                    <div class="fs-5 fw-bold text-primary">Total Paid: ${{ "%.2f"|format(order.totalAmount) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-bag-x text-muted" style="font-size: 3.5rem;"></i>
+                        <h4 class="fw-bold mt-3">No orders found</h4>
+                        <p class="text-muted">You haven't placed any orders yet.</p>
+                        <a href="/products" class="btn btn-outline-primary mt-2 rounded-3">Go Browse Catalog</a>
                     </div>
-                    <p class="text-muted mt-2">Fetching your order history logs...</p>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -1,31 +1,39 @@
-{% extends "vendor/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Edit Product{% endblock %}
-{% block page_title %}Edit Product: MacBook Pro M2{% endblock %}
+{% block title %}Edit Product - Vendor Portal{% endblock %}
+
+{% block active_breadcrumb %}
+<li class="breadcrumb-item"><a href="/vendor/products" class="text-decoration-none text-muted">My Products</a></li>
+<li class="breadcrumb-item active" aria-current="page">Edit Product</li>
+{% endblock %}
 
 {% block content %}
-<form action="/vendor/products/update/1" method="POST">
+<form id="editProductForm">
     <div class="row g-4">
         <!-- Main Form Area -->
         <div class="col-12 col-lg-8">
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0 fw-bold text-dark">Basic Information</h6>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">Active</span>
+                    {% if product.isAvailable and product.stock > 0 %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3">Inactive</span>
+                    {% endif %}
                 </div>
                 <div class="card-body p-4">
                     <div class="mb-3">
                         <label for="productName" class="form-label fw-medium text-secondary fs-7">Product Name</label>
-                        <input type="text" class="form-control" id="productName" value="MacBook Pro M2" required>
+                        <input type="text" class="form-control" id="productName" value="{{ product.productName }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="productDescription" class="form-label fw-medium text-secondary fs-7">Description</label>
-                        <textarea class="form-control" id="productDescription" rows="5">The Apple MacBook Pro M2 brings phenomenal performance to the pro notebook. The M2 chip delivers incredible power for complex workflows.</textarea>
+                        <textarea class="form-control" id="productDescription" rows="5" required>{{ product.description }}</textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
                     <h6 class="mb-0 fw-bold text-dark">Pricing & Inventory</h6>
                 </div>
@@ -35,16 +43,12 @@
                             <label for="productPrice" class="form-label fw-medium text-secondary fs-7">Price ($)</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">$</span>
-                                <input type="number" step="0.01" class="form-control border-start-0 pl-0" id="productPrice" value="1299.00" required>
+                                <input type="number" step="0.01" class="form-control border-start-0" id="productPrice" value="{{ product.price }}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="productSKU" class="form-label fw-medium text-secondary fs-7">SKU (Stock Keeping Unit)</label>
-                            <input type="text" class="form-control" id="productSKU" value="MAC-PRO-M2-256">
-                        </div>
-                        <div class="col-md-6">
                             <label for="productStock" class="form-label fw-medium text-secondary fs-7">Stock Quantity</label>
-                            <input type="number" class="form-control" id="productStock" value="45" min="0">
+                            <input type="number" class="form-control" id="productStock" value="{{ product.stock }}" min="0" required>
                         </div>
                     </div>
                 </div>
@@ -53,7 +57,7 @@
 
         <!-- Sidebar Form Area -->
         <div class="col-12 col-lg-4">
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
                     <h6 class="mb-0 fw-bold text-dark">Organization</h6>
                 </div>
@@ -61,44 +65,127 @@
                     <div class="mb-3">
                         <label for="productCategory" class="form-label fw-medium text-secondary fs-7">Category</label>
                         <select class="form-select" id="productCategory" required>
-                            <option value="1" selected>Electronics</option>
-                            <option value="2">Groceries</option>
-                            <option value="3">Clothing</option>
-                            <option value="4">Home & Garden</option>
+                            <option value="" disabled>Select Category</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.categoryName }}" {% if product.category == cat.categoryName %}selected{% endif %}>{{ cat.categoryName }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="productStatus" class="form-label fw-medium text-secondary fs-7">Status</label>
+                        <label for="productStatus" class="form-label fw-medium text-secondary fs-7">Availability Status</label>
                         <select class="form-select" id="productStatus">
-                            <option value="active" selected>Active</option>
-                            <option value="draft">Draft</option>
+                            <option value="true" {% if product.isAvailable %}selected{% endif %}>Available (Active listing)</option>
+                            <option value="false" {% if not product.isAvailable %}selected{% endif %}>Unavailable (Draft/Hidden)</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
-                    <h6 class="mb-0 fw-bold text-dark">Product Image</h6>
+                    <h6 class="mb-0 fw-bold text-dark">Product Image URL</h6>
                 </div>
                 <div class="card-body p-4 text-center">
-                    <div class="mb-3 rounded overflow-hidden shadow-sm">
-                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
-                            <i class="bi bi-laptop fs-1 text-secondary"></i>
-                        </div>
+                    <div class="mb-3 rounded overflow-hidden shadow-sm border" style="height: 150px;">
+                        <img src="{{ product.image or 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=300' }}" id="imagePreview" alt="Preview" class="w-100 h-100 object-fit-cover">
                     </div>
-                    <input type="file" class="form-control form-control-sm" id="productImage" accept="image/*">
+                    <div class="mb-3 text-start">
+                        <label for="productImageUrl" class="form-label fw-medium text-secondary fs-8">Image Link (HTTP/HTTPS URL)</label>
+                        <input type="url" class="form-control form-control-sm" id="productImageUrl" value="{{ product.image or '' }}" placeholder="https://images.unsplash.com/photo-...">
+                    </div>
                 </div>
             </div>
 
             <!-- Actions -->
             <div class="d-flex flex-column gap-2">
-                <button type="submit" class="btn btn-primary shadow-sm fw-medium w-100">Update Product</button>
-                <a href="/vendor/products" class="btn btn-light shadow-sm text-secondary fw-medium w-100">Cancel</a>
+                <button type="submit" class="btn btn-primary shadow-sm fw-semibold w-100 py-2 rounded-3">Update Product</button>
+                <a href="/vendor/products" class="btn btn-light shadow-sm text-secondary fw-semibold w-100 py-2 rounded-3">Cancel</a>
                 <hr class="my-2 border-secondary">
-                <button type="button" class="btn btn-outline-danger fw-medium w-100"><i class="bi bi-trash me-1"></i> Delete Product</button>
+                <button type="button" class="btn btn-outline-danger fw-semibold w-100 py-2 rounded-3" id="btnDelete"><i class="bi bi-trash me-1"></i> Delete Listing</button>
             </div>
         </div>
     </div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Image preview on URL input change
+        const imgInput = document.getElementById("productImageUrl");
+        const imgPreview = document.getElementById("imagePreview");
+        if (imgInput && imgPreview) {
+            imgInput.addEventListener("input", () => {
+                if (imgInput.value.trim().startsWith("http")) {
+                    imgPreview.src = imgInput.value.trim();
+                } else {
+                    imgPreview.src = "https://images.unsplash.com/photo-1542838132-92c53300491e?w=300";
+                }
+            });
+        }
+
+        const form = document.getElementById("editProductForm");
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                
+                const productName = document.getElementById("productName").value.trim();
+                const description = document.getElementById("productDescription").value.trim();
+                const price = parseFloat(document.getElementById("productPrice").value);
+                const stock = parseInt(document.getElementById("productStock").value);
+                const category = document.getElementById("productCategory").value;
+                const isAvailable = document.getElementById("productStatus").value === "true";
+                const image = document.getElementById("productImageUrl").value.trim() || null;
+                
+                try {
+                    const res = await fetch(`/api/vendor/products/{{ product.id }}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productName, description, price, stock, category, isAvailable, image })
+                    });
+                    
+                    if (res.status === 200) {
+                        showToast("Product listing updated successfully", "success");
+                        setTimeout(() => {
+                            window.location.href = "/vendor/products";
+                        }, 1200);
+                    } else {
+                        const data = await res.json();
+                        showToast(data.error || "Failed to update listing", "danger");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast("Error processing request", "danger");
+                }
+            });
+        }
+
+        // Handle delete
+        const delBtn = document.getElementById("btnDelete");
+        if (delBtn) {
+            delBtn.onclick = async (e) => {
+                e.preventDefault();
+                if (confirm("Are you sure you want to permanently delete this product?")) {
+                    try {
+                        const res = await fetch(`/api/vendor/products/{{ product.id }}`, {
+                            method: "DELETE"
+                        });
+                        if (res.status === 200) {
+                            showToast("Product deleted successfully", "success");
+                            setTimeout(() => {
+                                window.location.href = "/vendor/products";
+                            }, 1200);
+                        } else {
+                            const data = await res.json();
+                            showToast(data.error || "Failed to delete product", "danger");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showToast("Error deleting item", "danger");
+                    }
+                }
+            };
+        }
+    });
+</script>
 {% endblock %}

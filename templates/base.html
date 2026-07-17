@@ -10,116 +10,356 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
     <!-- Custom Style Sheet -->
     <link href="/static/css/style.css" rel="stylesheet">
+    
+    <!-- Conditional Admin/Vendor Dashboard CSS -->
+    {% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}
+    <link href="/static/css/admin.css" rel="stylesheet">
+    {% endif %}
+    
+    {% block styles %}{% endblock %}
 </head>
-<body>
+<body class="{% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}admin-body{% endif %}">
 
-    <!-- Glassmorphism Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-                <i class="bi bi-lightning-charge-fill text-primary"></i>
-                <span>HyperLocal</span>
-            </a>
+    {% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}
+    <!-- ====================================================
+         ADMIN & VENDOR DASHBOARD LAYOUT
+         ==================================================== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-brand">
+            {% if request.path.startswith('/admin') %}
+            <i class="bi bi-shield-check-fill text-primary"></i>
+            <span>HyperLocal Admin</span>
+            {% else %}
+            <i class="bi bi-shop text-success"></i>
+            <span>Vendor Portal</span>
+            {% endif %}
+        </div>
+        
+        <ul class="admin-sidebar-menu">
+            {% if request.path.startswith('/admin') %}
+                <!-- Admin Links -->
+                <li class="admin-sidebar-item {% if request.path == '/admin/dashboard' %}active{% endif %}">
+                    <a href="/admin/dashboard" class="admin-sidebar-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/admin/customers' %}active{% endif %}">
+                    <a href="/admin/customers" class="admin-sidebar-link">
+                        <i class="bi bi-people"></i>
+                        <span>Customers</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/admin/vendors' %}active{% endif %}">
+                    <a href="/admin/vendors" class="admin-sidebar-link">
+                        <i class="bi bi-shop"></i>
+                        <span>Vendors</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/admin/products' %}active{% endif %}">
+                    <a href="/admin/products" class="admin-sidebar-link">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/admin/orders' %}active{% endif %}">
+                    <a href="/admin/orders" class="admin-sidebar-link">
+                        <i class="bi bi-cart-check"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/admin/categories' %}active{% endif %}">
+                    <a href="/admin/categories" class="admin-sidebar-link">
+                        <i class="bi bi-tags"></i>
+                        <span>Categories</span>
+                    </a>
+                </li>
+            {% else %}
+                <!-- Vendor Links -->
+                <li class="admin-sidebar-item {% if request.path == '/vendor/dashboard' %}active{% endif %}">
+                    <a href="/vendor/dashboard" class="admin-sidebar-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/vendor/products' %}active{% endif %}">
+                    <a href="/vendor/products" class="admin-sidebar-link">
+                        <i class="bi bi-box-seam"></i>
+                        <span>My Products</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/vendor/orders' %}active{% endif %}">
+                    <a href="/vendor/orders" class="admin-sidebar-link">
+                        <i class="bi bi-cart-check"></i>
+                        <span>Store Orders</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item {% if request.path == '/vendor/profile' %}active{% endif %}">
+                    <a href="/vendor/profile" class="admin-sidebar-link">
+                        <i class="bi bi-person"></i>
+                        <span>Store Settings</span>
+                    </a>
+                </li>
+            {% endif %}
             
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <!-- Search bar -->
-                <form class="d-flex mx-auto col-lg-5 col-md-8 my-2 my-lg-0" action="/products" method="GET">
-                    <div class="input-group w-100">
-                        <input class="form-control search-input bg-light border-0" type="search" name="search" placeholder="Search products, groceries..." aria-label="Search">
-                        <button class="btn btn-outline-secondary border-0 bg-light" type="submit">
-                            <i class="bi bi-search text-muted"></i>
-                        </button>
-                    </div>
-                </form>
-                
-                <ul class="navbar-nav align-items-center mb-2 mb-lg-0 gap-3">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/products">Shop Catalog</a>
-                    </li>
-                    <li class="nav-item position-relative">
-                        <a class="nav-link d-flex align-items-center gap-1" href="/cart">
-                            <i class="bi bi-cart3 fs-5"></i>
-                            <span class="d-lg-none">Shopping Cart</span>
-                            <span id="cartBadge" class="badge bg-danger cart-badge d-none">0</span>
-                        </a>
-                    </li>
-                    <!-- Dynamic auth state managed by main.js -->
-                    <div id="navAuthSection" class="d-flex align-items-center">
-                        <li class="nav-item">
-                            <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
-                        </li>
-                    </div>
-                </ul>
+            <li class="admin-sidebar-item mt-4">
+                <a href="/" class="admin-sidebar-link text-warning">
+                    <i class="bi bi-arrow-left-circle"></i>
+                    <span>Marketplace Home</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="admin-sidebar-footer">
+            <div class="admin-user-profile text-truncate">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; flex-shrink: 0;" id="sidebarUserInitials">
+                    U
+                </div>
+                <div class="user-details text-truncate">
+                    <h6 class="text-white mb-0 text-truncate fw-semibold" id="sidebarUserFullName">Store User</h6>
+                    <small class="text-muted text-truncate" id="sidebarUserEmail">user@hyperlocal.com</small>
+                </div>
             </div>
         </div>
-    </nav>
+    </aside>
+    {% endif %}
+
+    {% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}
+    <div class="admin-wrapper">
+    {% endif %}
+
+        <!-- Top Bar Header / Customer Navbar -->
+        {% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}
+        <header class="admin-header">
+            <div class="d-flex align-items-center gap-2">
+                <button class="sidebar-toggler" id="sidebarToggle" aria-label="Toggle Sidebar">
+                    <i class="bi bi-justify"></i>
+                </button>
+                
+                <!-- Dynamic Breadcrumbs component block -->
+                <nav aria-label="breadcrumb" class="d-none d-md-block ms-3">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+                        {% if request.path.startswith('/admin') %}
+                        <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-decoration-none text-muted">Admin</a></li>
+                        {% else %}
+                        <li class="breadcrumb-item"><a href="/vendor/dashboard" class="text-decoration-none text-muted">Vendor</a></li>
+                        {% endif %}
+                        {% block active_breadcrumb %}
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                        {% endblock %}
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none text-dark gap-2 dropdown-toggle" id="adminProfileDrop" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle fs-4 text-primary"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow" aria-labelledby="adminProfileDrop">
+                        <li><a class="dropdown-item text-danger" href="#" id="sidebarLogoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        {% else %}
+        <!-- ====================================================
+             CUSTOMER MARKETPLACE LAYOUT
+             ==================================================== -->
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                    <i class="bi bi-lightning-charge-fill text-primary"></i>
+                    <span>HyperLocal</span>
+                </a>
+                
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <!-- Search bar -->
+                    <form class="d-flex mx-auto col-lg-5 col-md-8 my-2 my-lg-0" action="/products" method="GET">
+                        <div class="input-group w-100">
+                            <input class="form-control search-input bg-light border-0" type="search" name="search" placeholder="Search products, groceries..." aria-label="Search">
+                            <button class="btn btn-outline-secondary border-0 bg-light" type="submit">
+                                <i class="bi bi-search text-muted"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <ul class="navbar-nav align-items-center mb-2 mb-lg-0 gap-3">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/products">Shop Catalog</a>
+                        </li>
+                        <li class="nav-item position-relative">
+                            <a class="nav-link d-flex align-items-center gap-1" href="/cart">
+                                <i class="bi bi-cart3 fs-5"></i>
+                                <span class="d-lg-none">Shopping Cart</span>
+                                <span id="cartBadge" class="badge bg-danger cart-badge d-none">0</span>
+                            </a>
+                        </li>
+                        <div id="navAuthSection" class="d-flex align-items-center">
+                            <li class="nav-item">
+                                <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+                            </li>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+
+        <!-- Main Body Content -->
+        <main class="{% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}admin-content-body{% else %}flex-grow-1{% endif %}">
+            <!-- Flash Message Alerts -->
+            <div class="container mt-4 mb-2">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages-container mb-4">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show border-0 rounded-3 shadow-sm" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            {% block content %}{% endblock %}
+        </main>
+
+        {% if not (request.path.startswith('/admin') or request.path.startswith('/vendor')) %}
+        <!-- Footer -->
+        <footer class="mt-5">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <h5 class="text-white fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-lightning-charge-fill text-primary"></i>
+                            <span>HyperLocal</span>
+                        </h5>
+                        <p class="text-slate-300 fs-7">Connect with local vendors, support local shops, and receive swift deliveries on demand.</p>
+                    </div>
+                    <div class="col-md-4 col-lg-2 offset-lg-2">
+                        <h6 class="text-white fw-semibold mb-3">Links</h6>
+                        <ul class="list-unstyled fs-7 d-flex flex-column gap-2">
+                            <li><a href="/" class="text-slate-300 text-decoration-none">Home</a></li>
+                            <li><a href="/products" class="text-slate-300 text-decoration-none">Shop Products</a></li>
+                            <li><a href="/cart" class="text-slate-300 text-decoration-none">Cart</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <h6 class="text-white fw-semibold mb-3">Support</h6>
+                        <ul class="list-unstyled fs-7 d-flex flex-column gap-2">
+                            <li><a href="/profile" class="text-slate-300 text-decoration-none">My Profile</a></li>
+                            <li><a href="/orders" class="text-slate-300 text-decoration-none">My Orders</a></li>
+                            <li><a href="#" class="text-slate-300 text-decoration-none">Help Desk</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 col-lg-2">
+                        <h6 class="text-white fw-semibold mb-3">Contact</h6>
+                        <ul class="list-unstyled fs-7 d-flex flex-column gap-2 text-slate-300">
+                            <li><i class="bi bi-geo-alt me-2 text-primary"></i> 100 Main St, LocalCity</li>
+                            <li><i class="bi bi-telephone me-2 text-primary"></i> +1 234 567 890</li>
+                            <li><i class="bi bi-envelope me-2 text-primary"></i> support@hyperlocal.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="border-secondary my-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center fs-8 text-slate-300">
+                    <span>&copy; 2026 HyperLocal Market. All rights reserved.</span>
+                    <div class="d-flex gap-3 mt-2 mt-md-0">
+                        <a href="#" class="text-slate-300"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-slate-300"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-slate-300"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        {% endif %}
+
+    {% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}
+    </div>
+    {% endif %}
 
     <!-- Global Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Main Content Block -->
-    <main class="flex-grow-1">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer class="mt-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <h5 class="text-white fw-bold mb-3 d-flex align-items-center gap-2">
-                        <i class="bi bi-lightning-charge-fill text-primary"></i>
-                        <span>HyperLocal</span>
-                    </h5>
-                    <p class="text-slate-300 fs-7">Connect with local vendors, support local shops, and receive swift deliveries on demand.</p>
-                </div>
-                <div class="col-md-4 col-lg-2 offset-lg-2">
-                    <h6 class="text-white fw-semibold mb-3">Links</h6>
-                    <ul class="list-unstyled fs-7 d-flex flex-column gap-2">
-                        <li><a href="/" class="text-slate-300 text-decoration-none">Home</a></li>
-                        <li><a href="/products" class="text-slate-300 text-decoration-none">Shop Products</a></li>
-                        <li><a href="/cart" class="text-slate-300 text-decoration-none">Cart</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 col-lg-2">
-                    <h6 class="text-white fw-semibold mb-3">Support</h6>
-                    <ul class="list-unstyled fs-7 d-flex flex-column gap-2">
-                        <li><a href="/profile" class="text-slate-300 text-decoration-none">My Profile</a></li>
-                        <li><a href="/orders" class="text-slate-300 text-decoration-none">My Orders</a></li>
-                        <li><a href="#" class="text-slate-300 text-decoration-none">Help Desk</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 col-lg-2">
-                    <h6 class="text-white fw-semibold mb-3">Contact</h6>
-                    <ul class="list-unstyled fs-7 d-flex flex-column gap-2 text-slate-300">
-                        <li><i class="bi bi-geo-alt me-2 text-primary"></i> 100 Main St, LocalCity</li>
-                        <li><i class="bi bi-telephone me-2 text-primary"></i> +1 234 567 890</li>
-                        <li><i class="bi bi-envelope me-2 text-primary"></i> support@hyperlocal.com</li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="border-secondary my-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center fs-8 text-slate-300">
-                <span>&copy; 2026 HyperLocal Market. All rights reserved.</span>
-                <div class="d-flex gap-3 mt-2 mt-md-0">
-                    <a href="#" class="text-slate-300"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="text-slate-300"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="text-slate-300"><i class="bi bi-twitter-x"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <!-- Bootstrap Bundle with Popper JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- Core main.js script -->
     <script src="/static/js/main.js"></script>
+
+    <!-- Sidebar actions and session profile checking -->
+    {% if request.path.startswith('/admin') or request.path.startswith('/vendor') %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("adminSidebar");
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (window.innerWidth >= 992) {
+                        document.body.classList.toggle("sidebar-collapsed");
+                    } else {
+                        document.body.classList.toggle("sidebar-open");
+                    }
+                });
+            }
+            
+            // Session loading for profile
+            fetch("/api/profile")
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.user) {
+                        const nameEl = document.getElementById("sidebarUserFullName");
+                        const emailEl = document.getElementById("sidebarUserEmail");
+                        const avatarEl = document.getElementById("sidebarUserInitials");
+                        
+                        if (nameEl) nameEl.textContent = data.user.fullName;
+                        if (emailEl) emailEl.textContent = data.user.email;
+                        
+                        if (avatarEl && data.user.fullName) {
+                            const initials = data.user.fullName.split(" ").map(p => p[0]).join("").toUpperCase().substring(0, 2);
+                            avatarEl.textContent = initials;
+                        }
+                    }
+                });
+
+            const logoutBtn = document.getElementById("sidebarLogoutBtn");
+            if (logoutBtn) {
+                logoutBtn.onclick = async (e) => {
+                    e.preventDefault();
+                    await fetch("/api/logout", { method: "POST" });
+                    window.location.href = "/login";
+                };
+            }
+        });
+    </script>
+    {% endif %}
+
     {% block scripts %}{% endblock %}
 </body>
 </html>

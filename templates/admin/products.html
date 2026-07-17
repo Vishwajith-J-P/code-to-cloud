@@ -1,120 +1,141 @@
-{% extends "admin/admin_base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Product Catalog - HyperLocal Admin{% endblock %}
+{% block title %}Manage Products - HyperLocal Admin{% endblock %}
 
-{% block nav_products %}active{% endblock %}
+{% block active_breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Platform Catalog</li>
+{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
     <div>
-        <h2 class="fw-bold mb-1">Product Directory</h2>
-        <p class="text-muted mb-0">Monitor catalog items, adjust price/stock parameters, and verify seller association.</p>
+        <h2 class="fw-bold mb-1">Product Inventory</h2>
+        <p class="text-muted mb-0">Review listed product inventories, moderate descriptions, and remove items.</p>
     </div>
 </div>
 
 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white animate-fade-in-up">
-    <div class="row g-3 mb-4 align-items-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="input-group">
-                <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
-                <input type="text" class="form-control bg-light border-0" id="productSearchInput" placeholder="Search products by name...">
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <select class="form-select bg-light border-0" id="productCategoryFilter">
-                <option value="">All Categories</option>
-                <!-- Dynamically loaded -->
-            </select>
-        </div>
-    </div>
-    
     <div class="table-responsive">
-        <table class="table align-middle table-hover" id="productsPageTable">
-            <thead class="table-light">
+        <table class="table align-middle table-hover fs-7 w-100" id="productsPageTable">
+            <thead class="table-light text-muted">
                 <tr>
-                    <th>Product Details</th>
+                    <th>Product</th>
                     <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
-                    <th>Status</th>
+                    <th>Seller ID</th>
+                    <th>Availability</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td colspan="6" class="text-center text-muted py-4">Loading catalog items...</td>
-                </tr>
+                {% if products %}
+                    {% for p in products %}
+                        <tr id="row-prod-{{ p.id }}">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ p.image or 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=100' }}" alt="{{ p.productName }}" class="rounded object-fit-cover" style="width: 44px; height: 44px;">
+                                    <div>
+                                        <h6 class="mb-1 text-dark fw-semibold fs-7">{{ p.productName }}</h6>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 250px;">{{ p.description }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ p.category }}</td>
+                            <td class="fw-semibold text-dark">${{ "%.2f"|format(p.price) }}</td>
+                            <td>
+                                {% if p.stock > 0 %}
+                                    <span class="text-dark fw-medium">{{ p.stock }}</span>
+                                {% else %}
+                                    <span class="text-danger fw-medium">Out of stock</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted font-monospace">{{ p.vendorId }}</td>
+                            <td>
+                                {% if p.isAvailable and p.stock > 0 %}
+                                    <span class="badge bg-success-subtle text-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary">Unavailable</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-light text-secondary" onclick="viewProduct('{{ p.id }}')" title="View"><i class="bi bi-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-primary" onclick="editProduct('{{ p.id }}')" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" onclick="deleteProduct('{{ p.id }}')" title="Delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Product Modals -->
+<!-- Details Modal -->
 <div class="modal fade" id="productViewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">Product Information</h5>
+                <h5 class="modal-title fw-bold text-dark">Product Information</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="productViewBody">
-                <!-- Populated dynamically -->
-            </div>
+            <div class="modal-body" id="productViewBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Modal -->
 <div class="modal fade" id="productEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="productEditForm">
                 <input type="hidden" id="editProdId">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Edit Product Listing</h5>
+                    <h5 class="modal-title fw-bold text-dark">Edit Product Listing</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="editProdName" class="form-label">Product Name</label>
+                        <label for="editProdName" class="form-label text-dark fw-medium fs-7">Product Name</label>
                         <input type="text" class="form-control" id="editProdName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editProdDesc" class="form-label">Description</label>
+                        <label for="editProdDesc" class="form-label text-dark fw-medium fs-7">Description</label>
                         <textarea class="form-control" id="editProdDesc" rows="3"></textarea>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="editProdCategory" class="form-label">Category</label>
-                            <select class="form-select" id="editProdCategory" required>
-                                <!-- Categories populated dynamically -->
-                            </select>
+                            <label for="editProdCategory" class="form-label text-dark fw-medium fs-7">Category</label>
+                            <select class="form-select" id="editProdCategory" required></select>
                         </div>
                         <div class="col-6">
-                            <label for="editProdPrice" class="form-label">Price ($)</label>
+                            <label for="editProdPrice" class="form-label text-dark fw-medium fs-7">Price ($)</label>
                             <input type="number" step="0.01" class="form-control" id="editProdPrice" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="editProdStock" class="form-label">Stock Level</label>
+                            <label for="editProdStock" class="form-label text-dark fw-medium fs-7">Stock Level</label>
                             <input type="number" class="form-control" id="editProdStock" required>
                         </div>
                         <div class="col-6">
-                            <label for="editProdImage" class="form-label">Image URL</label>
+                            <label for="editProdImage" class="form-label text-dark fw-medium fs-7">Image URL</label>
                             <input type="text" class="form-control" id="editProdImage">
                         </div>
                     </div>
                     <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="editProdAvailable">
-                        <label class="form-check-label fw-medium" for="editProdAvailable">Is Available for Sale</label>
+                        <label class="form-check-label fw-semibold text-dark fs-7" for="editProdAvailable">Is Available for Sale</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -126,7 +147,15 @@
 <script src="/static/js/admin.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        loadProductsPage();
+        // Initialize DataTables
+        $('#productsPageTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            language: {
+                searchPlaceholder: "Search catalog...",
+                search: ""
+            }
+        });
     });
 </script>
 {% endblock %}

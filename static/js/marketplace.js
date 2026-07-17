@@ -4,15 +4,21 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     // Check if we are on the Products List Page
-    if (document.getElementById("productsContainer")) {
-        loadCategories();
-        loadProducts();
+    const productsContainer = document.getElementById("productsContainer");
+    if (productsContainer) {
+        if (productsContainer.dataset.ssr !== "true") {
+            loadCategories();
+            loadProducts();
+        }
         
         // Wire up filters
         const filterForm = document.getElementById("filterForm");
         if (filterForm) {
             filterForm.addEventListener("submit", (e) => {
                 e.preventDefault();
+                // Remove ssr flag since user is now interacting with filters
+                productsContainer.removeAttribute("data-ssr");
+                productsContainer.dataset.ssr = "false";
                 loadProducts();
             });
         }
@@ -22,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (searchForm) {
             searchForm.addEventListener("submit", (e) => {
                 e.preventDefault();
+                productsContainer.removeAttribute("data-ssr");
+                productsContainer.dataset.ssr = "false";
                 loadSearch();
             });
         }
@@ -30,8 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check if we are on the Product Details Page
     const detailsContainer = document.getElementById("productDetailsContainer");
     if (detailsContainer) {
-        const productId = detailsContainer.dataset.productId;
-        loadProductDetails(productId);
+        if (detailsContainer.dataset.ssr !== "true") {
+            const productId = detailsContainer.dataset.productId;
+            loadProductDetails(productId);
+        }
     }
 });
 

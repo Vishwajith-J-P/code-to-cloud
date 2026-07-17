@@ -29,7 +29,7 @@
                         <label class="form-label fw-semibold">Availability</label>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="inStock" value="true">
-                            <label class="form-check-label text-slate-700 fs-7" for="inStock">
+                            <label class="form-check-label text-slate-700" for="inStock">
                                 Exclude Out of Stock
                             </label>
                         </div>
@@ -37,7 +37,7 @@
                     
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary rounded-3 btn-sm py-2">Apply Filters</button>
-                        <button type="reset" class="btn btn-outline-secondary rounded-3 btn-sm py-2" onclick="setTimeout(loadProducts, 50)">Reset All</button>
+                        <a href="/products" class="btn btn-outline-secondary rounded-3 btn-sm py-2">Reset All</a>
                     </div>
                 </form>
             </div>
@@ -48,25 +48,60 @@
             <!-- Category circle lists -->
             <div class="mb-4">
                 <div id="categoriesContainer" class="d-flex flex-wrap align-items-center gap-1">
-                    <span class="spinner-border spinner-border-sm text-primary" role="status"></span> Loading categories...
+                    <a href="/products" class="category-pill {% if not active_category %}active{% endif %}">All Categories</a>
+                    {% for cat in categories %}
+                        <a href="/products?category={{ cat.categoryName }}{% if search_query %}&search={{ search_query }}{% endif %}" class="category-pill {% if active_category == cat.categoryName %}active{% endif %}">{{ cat.categoryName }}</a>
+                    {% endfor %}
                 </div>
             </div>
             
             <!-- Dynamic Search input field -->
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4 d-lg-none">
-                <form id="searchFormCatalog">
+                <form action="/products" method="GET">
                     <div class="input-group">
-                        <input type="search" class="form-control rounded-3 search-input" id="searchInputCatalog" placeholder="Search catalog...">
+                        <input type="search" name="search" class="form-control rounded-3 search-input" placeholder="Search catalog..." value="{{ search_query }}">
                         <button class="btn btn-primary rounded-3" type="submit">Search</button>
                     </div>
                 </form>
             </div>
             
-            <div class="row" id="productsContainer">
-                <!-- Dynamic cards loaded via JavaScript -->
-                <div class="col-12 text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
+            <div class="row" id="productsContainer" data-ssr="true">
+                {% if products %}
+                    {% for p in products %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="custom-card">
+                                <div class="card-img-wrapper">
+                                    <span class="card-tag">{{ p.category }}</span>
+                                    <img src="{{ p.image or 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500' }}" class="card-img-top" alt="{{ p.productName }}">
+                                </div>
+                                <div class="custom-card-body">
+                                    <a href="/product/{{ p.id }}" class="product-title">{{ p.productName }}</a>
+                                    <p class="product-desc text-truncate-2">{{ p.description }}</p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="product-price">${{ "%.2f"|format(p.price) }}</span>
+                                            {% if p.isAvailable and p.stock > 0 %}
+                                                <span class="badge bg-success-subtle text-success product-stock">In Stock ({{ p.stock }})</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger product-stock">Out of Stock</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-grid">
+                                            <a href="/product/{{ p.id }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye me-1"></i> View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-emoji-frown text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">No products found matching the criteria.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

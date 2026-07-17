@@ -1,14 +1,18 @@
-{% extends "vendor/base.html" %}
+{% extends "base.html" %}
 
-{% block title %}Add New Product{% endblock %}
-{% block page_title %}Add New Product{% endblock %}
+{% block title %}Add New Product - Vendor Portal{% endblock %}
+
+{% block active_breadcrumb %}
+<li class="breadcrumb-item"><a href="/vendor/products" class="text-decoration-none text-muted">My Products</a></li>
+<li class="breadcrumb-item active" aria-current="page">Add Product</li>
+{% endblock %}
 
 {% block content %}
-<form action="/vendor/products" method="POST">
+<form id="addProductForm">
     <div class="row g-4">
         <!-- Main Form Area -->
         <div class="col-12 col-lg-8">
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
                     <h6 class="mb-0 fw-bold text-dark">Basic Information</h6>
                 </div>
@@ -19,12 +23,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="productDescription" class="form-label fw-medium text-secondary fs-7">Description</label>
-                        <textarea class="form-control" id="productDescription" rows="5" placeholder="Detailed product description..."></textarea>
+                        <textarea class="form-control" id="productDescription" rows="5" placeholder="Detailed product description..." required></textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
                     <h6 class="mb-0 fw-bold text-dark">Pricing & Inventory</h6>
                 </div>
@@ -34,16 +38,12 @@
                             <label for="productPrice" class="form-label fw-medium text-secondary fs-7">Price ($)</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">$</span>
-                                <input type="number" step="0.01" class="form-control border-start-0 pl-0" id="productPrice" placeholder="0.00" required>
+                                <input type="number" step="0.01" class="form-control border-start-0" id="productPrice" placeholder="0.00" required>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label for="productSKU" class="form-label fw-medium text-secondary fs-7">SKU (Stock Keeping Unit)</label>
-                            <input type="text" class="form-control" id="productSKU" placeholder="e.g. BAN-ORG-01">
-                        </div>
-                        <div class="col-md-6">
                             <label for="productStock" class="form-label fw-medium text-secondary fs-7">Stock Quantity</label>
-                            <input type="number" class="form-control" id="productStock" value="1" min="0">
+                            <input type="number" class="form-control" id="productStock" value="1" min="0" required>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
 
         <!-- Sidebar Form Area -->
         <div class="col-12 col-lg-4">
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
                     <h6 class="mb-0 fw-bold text-dark">Organization</h6>
                 </div>
@@ -61,41 +61,81 @@
                         <label for="productCategory" class="form-label fw-medium text-secondary fs-7">Category</label>
                         <select class="form-select" id="productCategory" required>
                             <option value="" selected disabled>Select Category</option>
-                            <option value="1">Electronics</option>
-                            <option value="2">Groceries</option>
-                            <option value="3">Clothing</option>
-                            <option value="4">Home & Garden</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.categoryName }}">{{ cat.categoryName }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="productStatus" class="form-label fw-medium text-secondary fs-7">Status</label>
+                        <label for="productStatus" class="form-label fw-medium text-secondary fs-7">Availability Status</label>
                         <select class="form-select" id="productStatus">
-                            <option value="active" selected>Active</option>
-                            <option value="draft">Draft</option>
+                            <option value="true" selected>Available (Active listing)</option>
+                            <option value="false">Unavailable (Draft/Hidden)</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-header bg-white border-bottom py-3 px-4">
-                    <h6 class="mb-0 fw-bold text-dark">Product Image</h6>
+                    <h6 class="mb-0 fw-bold text-dark">Product Image URL</h6>
                 </div>
-                <div class="card-body p-4 text-center">
-                    <div class="border border-dashed rounded-3 p-4 mb-3 bg-light">
-                        <i class="bi bi-cloud-arrow-up fs-1 text-secondary mb-2"></i>
-                        <p class="text-muted fs-7 mb-0">Drag and drop image here or click to browse</p>
+                <div class="card-body p-4">
+                    <div class="mb-3 text-start">
+                        <label for="productImageUrl" class="form-label fw-medium text-secondary fs-8">Image Link (HTTP/HTTPS URL)</label>
+                        <input type="url" class="form-control form-control-sm" id="productImageUrl" placeholder="https://images.unsplash.com/photo-...">
                     </div>
-                    <input type="file" class="form-control form-control-sm" id="productImage" accept="image/*">
                 </div>
             </div>
 
             <!-- Actions -->
             <div class="d-flex gap-2 justify-content-end">
-                <a href="/vendor/products" class="btn btn-light shadow-sm text-secondary fw-medium px-4">Cancel</a>
-                <button type="submit" class="btn btn-primary shadow-sm fw-medium px-4">Save Product</button>
+                <a href="/vendor/products" class="btn btn-light shadow-sm text-secondary fw-medium px-4 rounded-3">Cancel</a>
+                <button type="submit" class="btn btn-primary shadow-sm fw-medium px-4 rounded-3">Save Product</button>
             </div>
         </div>
     </div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("addProductForm");
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                
+                const productName = document.getElementById("productName").value.trim();
+                const description = document.getElementById("productDescription").value.trim();
+                const price = parseFloat(document.getElementById("productPrice").value);
+                const stock = parseInt(document.getElementById("productStock").value);
+                const category = document.getElementById("productCategory").value;
+                const isAvailable = document.getElementById("productStatus").value === "true";
+                const image = document.getElementById("productImageUrl").value.trim() || null;
+                
+                try {
+                    const res = await fetch("/api/vendor/products", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productName, description, price, stock, category, isAvailable, image })
+                    });
+                    
+                    if (res.status === 201) {
+                        showToast("Product added successfully", "success");
+                        setTimeout(() => {
+                            window.location.href = "/vendor/products";
+                        }, 1200);
+                    } else {
+                        const data = await res.json();
+                        showToast(data.error || "Failed to create product", "danger");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast("Error processing request", "danger");
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

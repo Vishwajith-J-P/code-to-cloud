@@ -1,8 +1,10 @@
-{% extends "admin/admin_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Manage Customers - HyperLocal Admin{% endblock %}
 
-{% block nav_customers %}active{% endblock %}
+{% block active_breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Customer Accounts</li>
+{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
@@ -13,88 +15,99 @@
 </div>
 
 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white animate-fade-in-up">
-    <div class="row g-3 mb-4">
-        <div class="col-md-6 col-lg-4">
-            <div class="input-group">
-                <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
-                <input type="text" class="form-control bg-light border-0" id="customerSearchInput" placeholder="Search customers by name/email...">
-            </div>
-        </div>
-    </div>
-    
     <div class="table-responsive">
-        <table class="table align-middle table-hover" id="customersPageTable">
-            <thead class="table-light">
+        <table class="table align-middle table-hover fs-7 w-100" id="customersPageTable">
+            <thead class="table-light text-muted">
                 <tr>
                     <th>Customer Name</th>
                     <th>Email Address</th>
                     <th>Phone</th>
-                    <th>Registered Date</th>
+                    <th>Address</th>
                     <th>Status</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td colspan="6" class="text-center text-muted py-4">Loading customers...</td>
-                </tr>
+                {% if customers %}
+                    {% for c in customers %}
+                        <tr id="row-cust-{{ c.id }}">
+                            <td><div class="fw-semibold text-dark">{{ c.fullName }}</div></td>
+                            <td>{{ c.email }}</td>
+                            <td>{{ c.phone or 'N/A' }}</td>
+                            <td class="text-truncate" style="max-width: 180px;">{{ c.address or 'N/A' }}</td>
+                            <td>
+                                {% if c.isActive %}
+                                    <span class="badge bg-success-subtle text-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger">Deactivated</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-light text-secondary" onclick="viewCustomer('{{ c.id }}')" title="View"><i class="bi bi-eye"></i></button>
+                                    <button class="btn btn-sm btn-light text-primary" onclick="editCustomer('{{ c.id }}')" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger" onclick="deleteCustomer('{{ c.id }}')" title="Delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Customer Modals -->
+<!-- View Details Modal -->
 <div class="modal fade" id="customerViewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">Customer Details</h5>
+                <h5 class="modal-title fw-bold text-dark">Customer Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="customerViewBody">
-                <!-- Populated dynamically -->
-            </div>
+            <div class="modal-body" id="customerViewBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Profile Modal -->
 <div class="modal fade" id="customerEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="customerEditForm">
                 <input type="hidden" id="editCustId">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Edit Customer Profile</h5>
+                    <h5 class="modal-title fw-bold text-dark">Edit Customer Account</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="editCustName" class="form-label">Full Name</label>
+                        <label for="editCustName" class="form-label text-dark fw-medium fs-7">Full Name</label>
                         <input type="text" class="form-control" id="editCustName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editCustEmail" class="form-label">Email Address</label>
+                        <label for="editCustEmail" class="form-label text-dark fw-medium fs-7">Email Address</label>
                         <input type="email" class="form-control" id="editCustEmail" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editCustPhone" class="form-label">Phone Number</label>
+                        <label for="editCustPhone" class="form-label text-dark fw-medium fs-7">Phone Number</label>
                         <input type="text" class="form-control" id="editCustPhone">
                     </div>
                     <div class="mb-3">
-                        <label for="editCustAddress" class="form-label">Street Address</label>
+                        <label for="editCustAddress" class="form-label text-dark fw-medium fs-7">Street Address</label>
                         <textarea class="form-control" id="editCustAddress" rows="2"></textarea>
                     </div>
                     <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="editCustActive">
-                        <label class="form-check-label fw-medium" for="editCustActive">Account Active</label>
+                        <label class="form-check-label fw-semibold text-dark fs-7" for="editCustActive">Account Active</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -106,7 +119,15 @@
 <script src="/static/js/admin.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        loadCustomersPage();
+        // Initialize DataTables
+        $('#customersPageTable').DataTable({
+            responsive: true,
+            pageLength: 10,
+            language: {
+                searchPlaceholder: "Search customers...",
+                search: ""
+            }
+        });
     });
 </script>
 {% endblock %}

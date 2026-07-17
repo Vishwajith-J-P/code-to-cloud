@@ -1,16 +1,55 @@
 {% extends "base.html" %}
 
-{% block title %}Hyperlocal Marketplace - My Profile{% endblock %}
+{% block title %}My Profile - Hyperlocal Marketplace{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div id="profileContainer" class="animate-fade-in-up">
-        <!-- Dynamic profile cards loaded via JavaScript -->
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading profile...</span>
+<div class="container my-5 animate-fade-in-up">
+    <!-- Breadcrumbs component -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+    </nav>
+
+    <div id="profileContainer" data-ssr="true">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <div class="text-center mb-5">
+                        <div class="bg-primary text-white d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 90px; height: 90px;">
+                            <span class="fs-1 fw-bold">
+                                {% if user.fullName %}
+                                    {{ user.fullName[0]|upper }}
+                                {% else %}
+                                    U
+                                {% endif %}
+                            </span>
+                        </div>
+                        <h3 class="fw-bold mb-1">{{ user.fullName }}</h3>
+                        <span class="badge bg-primary-subtle text-primary py-2 px-3 rounded-pill">{{ user.role|upper }}</span>
+                    </div>
+                    
+                    <div class="row g-4 text-start">
+                        <div class="col-sm-6">
+                            <label class="text-muted d-block fs-7 mb-1">Email Address</label>
+                            <div class="fw-semibold border-bottom pb-2">{{ user.email }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="text-muted d-block fs-7 mb-1">Phone Number</label>
+                            <div class="fw-semibold border-bottom pb-2">{{ user.phone }}</div>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <label class="text-muted d-block fs-7 mb-1">Registered Address</label>
+                            <div class="fw-semibold border-bottom pb-2">{{ user.address }}</div>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <label class="text-muted d-block fs-7 mb-1">Account Status</label>
+                            <div class="fw-semibold text-success"><i class="bi bi-check-circle-fill me-1"></i> Active Verified</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="text-muted mt-2">Loading user session details...</p>
         </div>
     </div>
 </div>

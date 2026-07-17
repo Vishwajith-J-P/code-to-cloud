@@ -33,9 +33,11 @@
             <h3 class="fw-bold mb-0">Browse Categories</h3>
             <a href="/products" class="text-primary text-decoration-none fw-semibold">View All <i class="bi bi-arrow-right"></i></a>
         </div>
-        <div id="categoriesContainer" class="d-flex flex-wrap align-items-center">
-            <!-- Dynamic pills loaded via JavaScript -->
-            <span class="spinner-border spinner-border-sm text-primary" role="status"></span> Loading categories...
+        <div id="categoriesContainer" class="d-flex flex-wrap align-items-center gap-2">
+            <a href="/products" class="category-pill active">All Categories</a>
+            {% for cat in categories %}
+                <a href="/products?category={{ cat.categoryName }}" class="category-pill">{{ cat.categoryName }}</a>
+            {% endfor %}
         </div>
     </div>
 </section>
@@ -44,11 +46,42 @@
 <section class="animate-fade-in-up" style="animation-delay: 0.3s;">
     <div class="container">
         <h3 class="fw-bold mb-4">Featured Products</h3>
-        <div class="row" id="productsContainer">
-            <!-- Dynamic product cards loaded via JavaScript -->
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-primary" role="status"></div>
-            </div>
+        <div class="row" id="productsContainer" data-ssr="true">
+            {% if products %}
+                {% for p in products %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="custom-card">
+                            <div class="card-img-wrapper">
+                                <span class="card-tag">{{ p.category }}</span>
+                                <img src="{{ p.image or 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500' }}" class="card-img-top" alt="{{ p.productName }}">
+                            </div>
+                            <div class="custom-card-body">
+                                <a href="/product/{{ p.id }}" class="product-title">{{ p.productName }}</a>
+                                <p class="product-desc text-truncate-2">{{ p.description }}</p>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="product-price">${{ "%.2f"|format(p.price) }}</span>
+                                        {% if p.isAvailable and p.stock > 0 %}
+                                            <span class="badge bg-success-subtle text-success product-stock">In Stock ({{ p.stock }})</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger product-stock">Out of Stock</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-grid">
+                                        <a href="/product/{{ p.id }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-eye me-1"></i> View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No products available in this market yet.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>

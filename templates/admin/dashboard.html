@@ -1,8 +1,10 @@
-{% extends "admin/admin_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Admin Dashboard - HyperLocal Marketplace{% endblock %}
 
-{% block nav_dashboard %}active{% endblock %}
+{% block active_breadcrumb %}
+<li class="breadcrumb-item active" aria-current="page">Overview Dashboard</li>
+{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in-up">
@@ -10,78 +12,72 @@
         <h2 class="fw-bold mb-1">Overview Dashboard</h2>
         <p class="text-muted mb-0">Monitor business stats, revenue patterns, and catalogs.</p>
     </div>
-    <div>
-        <button class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1" id="refreshStatsBtn">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span>Sync Data</span>
-        </button>
-    </div>
 </div>
 
 <!-- Summary Cards -->
 <div class="row g-4 mb-5 animate-fade-in-up">
     <!-- Customers Card -->
     <div class="col-6 col-lg-3">
-        <div class="metric-card">
+        <div class="metric-card bg-white p-4 rounded-4 shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted fw-semibold">Customers</span>
-                <div class="metric-icon-box metric-purple">
+                <div class="metric-icon-box bg-purple bg-opacity-10 text-purple p-2 rounded-3">
                     <i class="bi bi-people-fill"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" id="statCustomers">0</h3>
+            <h3 class="fw-bold mb-1" id="statCustomers">{{ total_customers }}</h3>
             <small class="text-success fw-medium"><i class="bi bi-graph-up me-1"></i>Active platform users</small>
         </div>
     </div>
     <!-- Vendors Card -->
     <div class="col-6 col-lg-3">
-        <div class="metric-card">
+        <div class="metric-card bg-white p-4 rounded-4 shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted fw-semibold">Vendors</span>
-                <div class="metric-icon-box metric-emerald">
+                <div class="metric-icon-box bg-emerald bg-opacity-10 text-emerald p-2 rounded-3">
                     <i class="bi bi-shop"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" id="statVendors">0</h3>
+            <h3 class="fw-bold mb-1" id="statVendors">{{ total_vendors }}</h3>
             <small class="text-success fw-medium"><i class="bi bi-patch-check me-1"></i>Verified retailers</small>
         </div>
     </div>
     <!-- Products Card -->
     <div class="col-6 col-lg-3">
-        <div class="metric-card">
+        <div class="metric-card bg-white p-4 rounded-4 shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted fw-semibold">Products</span>
-                <div class="metric-icon-box metric-blue">
+                <div class="metric-icon-box bg-primary bg-opacity-10 text-primary p-2 rounded-3">
                     <i class="bi bi-box-seam"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" id="statProducts">0</h3>
+            <h3 class="fw-bold mb-1" id="statProducts">{{ total_products }}</h3>
             <small class="text-secondary fw-medium">Items listed catalog</small>
         </div>
     </div>
     <!-- Orders Card -->
     <div class="col-6 col-lg-3">
-        <div class="metric-card">
+        <div class="metric-card bg-white p-4 rounded-4 shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="text-muted fw-semibold">Orders</span>
-                <div class="metric-icon-box metric-orange">
+                <div class="metric-icon-box bg-orange bg-opacity-10 text-orange p-2 rounded-3">
                     <i class="bi bi-cart3"></i>
                 </div>
             </div>
-            <h3 class="fw-bold mb-1" id="statOrders">0</h3>
+            <h3 class="fw-bold mb-1" id="statOrders">{{ total_orders }}</h3>
             <small class="text-warning fw-medium">Total checkout receipts</small>
         </div>
     </div>
-    <!-- Revenue Card (Below, or we can use 5 columns/rows) -->
-    <div class="col-12 col-md-12">
-        <div class="metric-card bg-primary text-white" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;">
+    <!-- Revenue Card -->
+    <div class="col-12">
+        <div class="metric-card text-white p-4 rounded-4" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-white-50 fw-semibold">Estimated Total Platform Revenue</span>
-                <div class="metric-icon-box bg-white bg-opacity-20 text-white">
+                <span class="text-white bg-opacity-50 fw-semibold">Estimated Total Platform Revenue</span>
+                <div class="bg-white bg-opacity-20 text-white p-2 rounded-3">
                     <i class="bi bi-currency-dollar"></i>
                 </div>
             </div>
-            <h2 class="fw-bold mb-1 fs-1" id="statRevenue">$0.00</h2>
+            <h2 class="fw-bold mb-1 fs-1" id="statRevenue">${{ "%.2f"|format(revenue) }}</h2>
             <small class="text-white-50"><i class="bi bi-check-circle-fill me-1"></i>Sum of all "Delivered" checkout values</small>
         </div>
     </div>
@@ -91,8 +87,8 @@
 <div class="row g-4 mb-5 animate-fade-in-up">
     <!-- Monthly Revenue -->
     <div class="col-12 col-lg-8">
-        <div class="chart-container">
-            <h5 class="chart-title">Monthly Revenue Performance</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-dark mb-4">Monthly Revenue Performance</h5>
             <div style="height: 300px; position: relative;">
                 <canvas id="monthlyRevenueChart"></canvas>
             </div>
@@ -100,8 +96,8 @@
     </div>
     <!-- Product Categories -->
     <div class="col-12 col-lg-4">
-        <div class="chart-container">
-            <h5 class="chart-title">Catalog Categories</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-dark mb-4">Catalog Categories</h5>
             <div style="height: 300px; position: relative;">
                 <canvas id="productCategoriesChart"></canvas>
             </div>
@@ -109,8 +105,8 @@
     </div>
     <!-- Daily Orders -->
     <div class="col-12">
-        <div class="chart-container">
-            <h5 class="chart-title">Daily Order Volatility (Last 30 Days)</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-dark mb-4">Daily Order Volatility (Last 30 Days)</h5>
             <div style="height: 260px; position: relative;">
                 <canvas id="dailyOrdersChart"></canvas>
             </div>
@@ -126,13 +122,13 @@
     <div class="col-12 col-xl-6">
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">Customer Records</h5>
+                <h5 class="fw-bold mb-0 text-dark">Customer Records</h5>
                 <a href="/admin/customers" class="btn btn-link btn-sm text-decoration-none">View All</a>
             </div>
             <div class="table-responsive">
-                <table class="table align-middle" id="dashboardUsersTable">
+                <table class="table align-middle fs-7" id="dashboardUsersTable" data-ssr="true">
                     <thead>
-                        <tr>
+                        <tr class="text-muted">
                             <th>Name</th>
                             <th>Email</th>
                             <th>Status</th>
@@ -140,9 +136,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="4" class="text-center text-muted py-3">Loading users...</td>
-                        </tr>
+                        {% if recent_customers %}
+                            {% for c in recent_customers %}
+                                <tr>
+                                    <td><div class="fw-semibold">{{ c.fullName }}</div></td>
+                                    <td>{{ c.email }}</td>
+                                    <td>
+                                        {% if c.isActive %}
+                                            <span class="badge bg-success-subtle text-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger">Deactivated</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="viewCustomer('{{ c.id }}')"><i class="bi bi-eye"></i></button>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editCustomer('{{ c.id }}')"><i class="bi bi-pencil"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4" class="text-center text-muted">No customers found.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -153,23 +169,43 @@
     <div class="col-12 col-xl-6">
         <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">Vendor Directory</h5>
+                <h5 class="fw-bold mb-0 text-dark">Vendor Directory</h5>
                 <a href="/admin/vendors" class="btn btn-link btn-sm text-decoration-none">View All</a>
             </div>
             <div class="table-responsive">
-                <table class="table align-middle" id="dashboardVendorsTable">
+                <table class="table align-middle fs-7" id="dashboardVendorsTable" data-ssr="true">
                     <thead>
-                        <tr>
-                            <th>Store/Name</th>
+                        <tr class="text-muted">
+                            <th>Store</th>
                             <th>Email</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="4" class="text-center text-muted py-3">Loading vendors...</td>
-                        </tr>
+                        {% if recent_vendors %}
+                            {% for v in recent_vendors %}
+                                <tr>
+                                    <td><div class="fw-semibold">{{ v.fullName }}</div></td>
+                                    <td>{{ v.email }}</td>
+                                    <td>
+                                        {% if v.isActive %}
+                                            <span class="badge bg-success-subtle text-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger">Deactivated</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="viewVendor('{{ v.id }}')"><i class="bi bi-eye"></i></button>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editVendor('{{ v.id }}')"><i class="bi bi-pencil"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4" class="text-center text-muted">No vendors found.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -180,13 +216,13 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">Product Inventory Sample</h5>
+                <h5 class="fw-bold mb-0 text-dark">Product Inventory Sample</h5>
                 <a href="/admin/products" class="btn btn-link btn-sm text-decoration-none">View All Products</a>
             </div>
             <div class="table-responsive">
-                <table class="table align-middle" id="dashboardProductsTable">
+                <table class="table align-middle fs-7" id="dashboardProductsTable" data-ssr="true">
                     <thead>
-                        <tr>
+                        <tr class="text-muted">
                             <th>Product Name</th>
                             <th>Category</th>
                             <th>Price</th>
@@ -196,9 +232,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-3">Loading products...</td>
-                        </tr>
+                        {% if recent_products %}
+                            {% for p in recent_products %}
+                                <tr>
+                                    <td><div class="fw-semibold">{{ p.productName }}</div></td>
+                                    <td class="text-muted">{{ p.category }}</td>
+                                    <td class="fw-semibold">${{ "%.2f"|format(p.price) }}</td>
+                                    <td>{{ p.stock }}</td>
+                                    <td>
+                                        {% if p.isAvailable and p.stock > 0 %}
+                                            <span class="badge bg-success-subtle text-success">Available</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary">Unavailable</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="viewProduct('{{ p.id }}')"><i class="bi bi-eye"></i></button>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editProduct('{{ p.id }}')"><i class="bi bi-pencil"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="6" class="text-center text-muted">No products listed.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -209,15 +267,15 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold mb-0">Recent Platform Orders</h5>
+                <h5 class="fw-bold mb-0 text-dark">Recent Platform Orders</h5>
                 <a href="/admin/orders" class="btn btn-link btn-sm text-decoration-none">View All Orders</a>
             </div>
             <div class="table-responsive">
-                <table class="table align-middle" id="dashboardOrdersTable">
+                <table class="table align-middle fs-7" id="dashboardOrdersTable" data-ssr="true">
                     <thead>
-                        <tr>
+                        <tr class="text-muted">
                             <th>Order No</th>
-                            <th>Items</th>
+                            <th>Destination</th>
                             <th>Total Amt</th>
                             <th>Order Status</th>
                             <th>Payment Status</th>
@@ -225,9 +283,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-3">Loading orders...</td>
-                        </tr>
+                        {% if recent_orders %}
+                            {% for o in recent_orders %}
+                                {% set status = o.orderStatus %}
+                                {% set badgeClass = "badge-pending" %}
+                                {% if status == "Confirmed" %}{% set badgeClass = "badge-confirmed" %}{% endif %}
+                                {% if status == "Delivered" %}{% set badgeClass = "badge-delivered" %}{% endif %}
+                                {% if status == "Cancelled" %}{% set badgeClass = "badge-cancelled" %}{% endif %}
+                                <tr>
+                                    <td><span class="fw-semibold text-primary">{{ o.orderNumber }}</span></td>
+                                    <td class="text-truncate" style="max-width: 200px;">{{ o.shippingAddress }}</td>
+                                    <td class="fw-semibold">${{ "%.2f"|format(o.totalAmount) }}</td>
+                                    <td><span class="badge-order {{ badgeClass }}">{{ o.orderStatus }}</span></td>
+                                    <td><span class="badge bg-light text-dark border">{{ o.paymentStatus }}</span></td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="viewOrder('{{ o.id }}')"><i class="bi bi-eye"></i></button>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editOrder('{{ o.id }}')"><i class="bi bi-pencil"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="6" class="text-center text-muted">No orders placed.</td></tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -239,224 +318,218 @@
      COMMON CRUD MODALS
      ============================================== -->
 
-<!-- 1. Customer Modals -->
+<!-- Customer Details View Modal -->
 <div class="modal fade" id="customerViewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">Customer Details</h5>
+                <h5 class="modal-title fw-bold text-dark">Customer Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="customerViewBody">
-                <!-- Populated dynamically -->
-            </div>
+            <div class="modal-body" id="customerViewBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Customer Edit Modal -->
 <div class="modal fade" id="customerEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="customerEditForm">
                 <input type="hidden" id="editCustId">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Edit Customer Account</h5>
+                    <h5 class="modal-title fw-bold text-dark">Edit Customer Account</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="editCustName" class="form-label">Full Name</label>
+                        <label for="editCustName" class="form-label text-dark fw-medium fs-7">Full Name</label>
                         <input type="text" class="form-control" id="editCustName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editCustEmail" class="form-label">Email Address</label>
+                        <label for="editCustEmail" class="form-label text-dark fw-medium fs-7">Email Address</label>
                         <input type="email" class="form-control" id="editCustEmail" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editCustPhone" class="form-label">Phone Number</label>
+                        <label for="editCustPhone" class="form-label text-dark fw-medium fs-7">Phone Number</label>
                         <input type="text" class="form-control" id="editCustPhone">
                     </div>
                     <div class="mb-3">
-                        <label for="editCustAddress" class="form-label">Street Address</label>
+                        <label for="editCustAddress" class="form-label text-dark fw-medium fs-7">Street Address</label>
                         <textarea class="form-control" id="editCustAddress" rows="2"></textarea>
                     </div>
                     <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="editCustActive">
-                        <label class="form-check-label fw-medium" for="editCustActive">Account Active</label>
+                        <label class="form-check-label fw-semibold text-dark fs-7" for="editCustActive">Account Active</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- 2. Vendor Modals -->
+<!-- Vendor Details View Modal -->
 <div class="modal fade" id="vendorViewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">Vendor Store Details</h5>
+                <h5 class="modal-title fw-bold text-dark">Vendor Store Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="vendorViewBody">
-                <!-- Populated dynamically -->
-            </div>
+            <div class="modal-body" id="vendorViewBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Vendor Edit Modal -->
 <div class="modal fade" id="vendorEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="vendorEditForm">
                 <input type="hidden" id="editVendorId">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Edit Vendor Profile</h5>
+                    <h5 class="modal-title fw-bold text-dark">Edit Vendor Profile</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="editVendorName" class="form-label">Store/Retailer Name</label>
+                        <label for="editVendorName" class="form-label text-dark fw-medium fs-7">Store Name</label>
                         <input type="text" class="form-control" id="editVendorName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editVendorEmail" class="form-label">Email Address</label>
+                        <label for="editVendorEmail" class="form-label text-dark fw-medium fs-7">Email Address</label>
                         <input type="email" class="form-control" id="editVendorEmail" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editVendorPhone" class="form-label">Phone Number</label>
+                        <label for="editVendorPhone" class="form-label text-dark fw-medium fs-7">Phone Number</label>
                         <input type="text" class="form-control" id="editVendorPhone">
                     </div>
                     <div class="mb-3">
-                        <label for="editVendorAddress" class="form-label">Store Location Address</label>
+                        <label for="editVendorAddress" class="form-label text-dark fw-medium fs-7">Store Location Address</label>
                         <textarea class="form-control" id="editVendorAddress" rows="2"></textarea>
                     </div>
                     <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="editVendorActive">
-                        <label class="form-check-label fw-medium" for="editVendorActive">Store Active</label>
+                        <label class="form-check-label fw-semibold text-dark fs-7" for="editVendorActive">Store Active</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- 3. Product Modals -->
+<!-- Product Details View Modal -->
 <div class="modal fade" id="productViewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">Product Information</h5>
+                <h5 class="modal-title fw-bold text-dark">Product Information</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="productViewBody">
-                <!-- Populated dynamically -->
-            </div>
+            <div class="modal-body" id="productViewBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Product Edit Modal -->
 <div class="modal fade" id="productEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="productEditForm">
                 <input type="hidden" id="editProdId">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Edit Product Listing</h5>
+                    <h5 class="modal-title fw-bold text-dark">Edit Product Listing</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="editProdName" class="form-label">Product Name</label>
+                        <label for="editProdName" class="form-label text-dark fw-medium fs-7">Product Name</label>
                         <input type="text" class="form-control" id="editProdName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editProdDesc" class="form-label">Description</label>
+                        <label for="editProdDesc" class="form-label text-dark fw-medium fs-7">Description</label>
                         <textarea class="form-control" id="editProdDesc" rows="3"></textarea>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="editProdCategory" class="form-label">Category</label>
-                            <select class="form-select" id="editProdCategory" required>
-                                <!-- Categories populated dynamically -->
-                            </select>
+                            <label for="editProdCategory" class="form-label text-dark fw-medium fs-7">Category</label>
+                            <select class="form-select" id="editProdCategory" required></select>
                         </div>
                         <div class="col-6">
-                            <label for="editProdPrice" class="form-label">Price ($)</label>
+                            <label for="editProdPrice" class="form-label text-dark fw-medium fs-7">Price ($)</label>
                             <input type="number" step="0.01" class="form-control" id="editProdPrice" required>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="editProdStock" class="form-label">Stock Level</label>
+                            <label for="editProdStock" class="form-label text-dark fw-medium fs-7">Stock Level</label>
                             <input type="number" class="form-control" id="editProdStock" required>
                         </div>
                         <div class="col-6">
-                            <label for="editProdImage" class="form-label">Image URL</label>
+                            <label for="editProdImage" class="form-label text-dark fw-medium fs-7">Image URL</label>
                             <input type="text" class="form-control" id="editProdImage">
                         </div>
                     </div>
                     <div class="mb-3 form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="editProdAvailable">
-                        <label class="form-check-label fw-medium" for="editProdAvailable">Is Available for Sale</label>
+                        <label class="form-check-label fw-semibold text-dark fs-7" for="editProdAvailable">Is Available for Sale</label>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- 4. Order Modals -->
+<!-- Order View Modal -->
 <div class="modal fade" id="orderViewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">Order Breakdown</h5>
+                <h5 class="modal-title fw-bold text-dark">Order Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="orderViewBody">
-                <!-- Populated dynamically -->
-            </div>
+            <div class="modal-body text-start" id="orderViewBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Order Edit Modal -->
 <div class="modal fade" id="orderEditModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="orderEditForm">
                 <input type="hidden" id="editOrderId">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Manage Order Statuses</h5>
+                    <h5 class="modal-title fw-bold text-dark">Manage Order Statuses</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-start">
                     <div class="mb-3">
-                        <label for="editOrderStatus" class="form-label">Order Fulfillment Status</label>
+                        <label for="editOrderStatus" class="form-label text-dark fw-medium fs-7">Order Fulfillment Status</label>
                         <select class="form-select" id="editOrderStatus" required>
                             <option value="Pending">Pending</option>
                             <option value="Confirmed">Confirmed</option>
@@ -467,7 +540,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="editOrderPayment" class="form-label">Payment Status</label>
+                        <label for="editOrderPayment" class="form-label text-dark fw-medium fs-7">Payment Status</label>
                         <select class="form-select" id="editOrderPayment" required>
                             <option value="Pending">Pending</option>
                             <option value="Completed">Completed</option>
@@ -476,8 +549,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-3">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -486,13 +559,11 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Admin Script -->
+<!-- Admin Scripts -->
 <script src="/static/js/admin.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Load stats, charts, and sample tables
+        // Initialize dashboard state and charts
         loadAdminDashboard({ limit: 5 });
     });
 </script>
