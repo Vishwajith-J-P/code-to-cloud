@@ -812,9 +812,17 @@ async function editProduct(id) {
         // Populate category dropdown in edit modal
         const catSelect = document.getElementById("editProdCategory");
         if (catSelect) {
-            catSelect.innerHTML = allCategories.map(c => `
-                <option value="${c.categoryName}" ${c.categoryName === product.category ? 'selected' : ''}>${c.categoryName}</option>
-            `).join("");
+            try {
+                const catRes = await fetch("/api/admin/categories");
+                const catData = await catRes.json();
+                if (catData.categories) {
+                    catSelect.innerHTML = catData.categories.map(c => `
+                        <option value="${c.categoryName}" ${c.categoryName === product.category ? 'selected' : ''}>${c.categoryName}</option>
+                    `).join("");
+                }
+            } catch (err) {
+                console.error("Could not fetch categories:", err);
+            }
         }
         
         const modal = new bootstrap.Modal(document.getElementById("productEditModal"));

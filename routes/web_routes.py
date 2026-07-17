@@ -49,6 +49,53 @@ def login():
         return redirect('/')
     return render_template("login.html")
 
+@web_bp.route("/login/google")
+def google_login():
+    from services.oauth import oauth
+    redirect_uri = url_for('web.google_authorize', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@web_bp.route("/login/google/authorize")
+def google_authorize():
+    from services.oauth import oauth
+    from flask_login import login_user
+    from models.user import User, create_user_doc
+    from models.cart import create_cart_doc
+    import secrets
+    
+    token = oauth.google.authorize_access_token()
+    # authlib 1.0+ handles parsing id_token using parse_id_token
+    # But since we have openid scope, we can get userinfo directly:
+    resp = oauth.google.get('https://openidconnect.googleapis.com/v1/userinfo')
+    user_info = resp.json()
+    
+    email = user_info.get('email')
+    name = user_info.get('name', 'Google User')
+    
+    db = get_db()
+    existing_user = db.users.find_one({"email": email.strip().lower()})
+    
+    if not existing_user:
+        # Create a new customer user
+        # We assign a random secure password since they use Google to login
+        random_pwd = secrets.token_urlsafe(16)
+        user_doc = create_user_doc(name, email, random_pwd, "", "", "customer")
+        user_doc["authProvider"] = "google"
+        
+        result = db.users.insert_one(user_doc)
+        user_doc["_id"] = result.inserted_id
+        
+        # Create a cart for the new customer
+        cart_doc = create_cart_doc(result.inserted_id)
+        db.carts.insert_one(cart_doc)
+        
+        user_obj = User(user_doc)
+    else:
+        user_obj = User(existing_user)
+        
+    login_user(user_obj)
+    return redirect(url_for('web.home'))
+
 @web_bp.route("/register")
 def register():
     if current_user.is_authenticated:
@@ -244,7 +291,7 @@ def vendor_dashboard():
     
     res = list(db.orders.aggregate([
         {"$match": {"vendorId": vendor_id, "orderStatus": "Delivered"}},
-        {"$group": {"_id": None, "revenue": {"$sum": "$totalAmount"}}}
+        {"$group": {"_id": None, "revenue": {"$sum": "$subtotal"}}}
     ]))
     revenue = res[0]["revenue"] if res else 0.0
     

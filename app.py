@@ -24,6 +24,10 @@ def create_app():
     login_manager = LoginManager()
     login_manager.init_app(app)
     
+    # Initialize OAuth
+    from services.oauth import init_oauth
+    init_oauth(app)
+    
     # Customize Flask-Login's unauthorized response to return JSON rather than redirecting to HTML login pages
     @login_manager.unauthorized_handler
     def unauthorized():

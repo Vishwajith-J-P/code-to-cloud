@@ -41,13 +41,13 @@ def get_vendor_dashboard():
     months_map = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
                   7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"}
     monthly_sales_pipeline = [
-        {"$match": {"vendorId": vendor_oid}},
+        {"$match": {"vendorId": vendor_oid, "orderStatus": "Delivered"}},
         {"$group": {
             "_id": {
                 "year": {"$year": "$createdAt"},
                 "month": {"$month": "$createdAt"}
             },
-            "revenue": {"$sum": "$totalAmount"}
+            "revenue": {"$sum": "$subtotal"}
         }},
         {"$sort": {"_id.year": 1, "_id.month": 1}}
     ]
