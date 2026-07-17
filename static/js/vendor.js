@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Helper: format currency
 function formatVendorCurrency(amount) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
 }
 
 // Main analytics loader
@@ -78,7 +78,7 @@ function renderMonthlySalesChart(data) {
         data: {
             labels: labels.length ? labels : ['No Data'],
             datasets: [{
-                label: 'Revenue ($)',
+                label: 'Revenue (₹)',
                 data: values.length ? values : [0],
                 borderColor: '#0d6efd',
                 backgroundColor: 'rgba(13, 110, 253, 0.08)',
@@ -114,7 +114,7 @@ function renderMonthlySalesChart(data) {
                 y: {
                     beginAtZero: true,
                     grid: { borderDash: [4, 4], color: 'rgba(0,0,0,0.05)', drawBorder: false },
-                    ticks: { callback: v => '$' + v }
+                    ticks: { callback: v => '₹' + v }
                 },
                 x: { grid: { display: false, drawBorder: false } }
             }
