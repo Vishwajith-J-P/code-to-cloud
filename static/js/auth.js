@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const userRole = data.user.role;
                         if (userRole === "vendor") {
                             // If they have vendor/admin dashboards built
-                            window.location.href = "/"; 
+                            window.location.href = "/vendor/dashboard"; 
                         } else if (userRole === "admin") {
                             window.location.href = "/";
                         } else {

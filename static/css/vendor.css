@@ -1,0 +1,125 @@
+/* Vendor Dashboard CSS */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Typography & Utils */
+.fs-7 { font-size: 0.875rem; }
+.fs-8 { font-size: 0.75rem; }
+.text-slate-300 { color: #cbd5e1; }
+.btn-primary-light { background-color: rgba(13, 110, 253, 0.1); border: none; }
+.btn-primary-light:hover { background-color: rgba(13, 110, 253, 0.2); }
+.btn-icon { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+
+/* Sidebar Styles */
+#wrapper {
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 260px;
+    margin-left: -260px;
+    transition: margin 0.25s ease-out;
+    background: #1e1e2f;
+    z-index: 1000;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
+.sidebar-heading {
+    padding: 1rem 1.25rem;
+    font-size: 1.2rem;
+    background: rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.list-group-item {
+    background-color: transparent;
+    border: none;
+    color: #a0a0b0 !important;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.list-group-item:hover, .list-group-item.active-nav {
+    background-color: rgba(255,255,255,0.08);
+    color: #fff !important;
+}
+
+.list-group-item.active-nav {
+    background-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+/* Page Content */
+#page-content-wrapper {
+    min-width: 100vw;
+    transition: min-width 0.25s ease-out;
+}
+
+/* Top Navigation */
+.topbar {
+    z-index: 999;
+}
+
+#menu-toggle {
+    transition: transform 0.2s;
+}
+
+#menu-toggle:hover {
+    color: #0d6efd !important;
+}
+
+/* Cards & Tables */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
+}
+
+.table > :not(caption) > * > * {
+    padding: 1rem 0.5rem;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0,0,0,0.015);
+}
+
+/* Badges */
+.badge {
+    font-weight: 600;
+}
+
+/* Form Styles */
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -260px;
+    }
+}

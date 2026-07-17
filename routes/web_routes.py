@@ -37,3 +37,29 @@ def orders():
 @web_bp.route("/profile")
 def profile():
     return render_template("profile.html")
+
+# Vendor UI Routes
+@web_bp.route("/vendor/dashboard")
+def vendor_dashboard():
+    return render_template("vendor/dashboard.html")
+
+@web_bp.route("/vendor/products")
+def vendor_products():
+    return render_template("vendor/products.html")
+
+@web_bp.route("/vendor/products/add")
+def vendor_products_add():
+    return render_template("vendor/add_product.html")
+
+@web_bp.route("/vendor/products/edit/<product_id>")
+def vendor_products_edit(product_id):
+    return render_template("vendor/edit_product.html")
+
+@web_bp.route("/vendor/orders")
+def vendor_orders():
+    return render_template("vendor/orders.html")
+
+@web_bp.route("/vendor/profile")
+def vendor_profile():
+    return render_template("vendor/profile.html")
+
