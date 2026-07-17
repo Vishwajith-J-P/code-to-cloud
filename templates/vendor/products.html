@@ -41,7 +41,7 @@
                                     </div>
                                 </td>
                                 <td class="text-muted">{{ p.category }}</td>
-                                <td class="fw-medium text-dark">${{ "%.2f"|format(p.price) }}</td>
+                                <td class="fw-medium text-dark">₹{{ "%.2f"|format(p.price) }}</td>
                                 <td>
                                     {% if p.stock > 10 %}
                                         <span class="text-dark fw-medium">{{ p.stock }}</span> <span class="text-muted fs-8">in stock</span>

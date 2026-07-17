@@ -45,7 +45,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted fw-normal mb-1">Total Revenue</h6>
-                    <h3 class="mb-0 fw-bold text-dark">${{ "%.2f"|format(revenue) }}</h3>
+                    <h3 class="mb-0 fw-bold text-dark">₹{{ "%.2f"|format(revenue) }}</h3>
                 </div>
             </div>
         </div>
@@ -109,7 +109,7 @@
                                 <td class="ps-4 py-3"><span class="fw-medium text-dark">{{ order.orderNumber }}</span></td>
                                 <td class="py-3 text-truncate" style="max-width: 250px;">{{ order.shippingAddress }}</td>
                                 <td class="py-3 text-muted">{{ order.createdAt[:10] if order.createdAt else '' }}</td>
-                                <td class="py-3 fw-semibold">${{ "%.2f"|format(order.totalAmount) }}</td>
+                                <td class="py-3 fw-semibold">₹{{ "%.2f"|format(order.totalAmount) }}</td>
                                 <td class="py-3"><span class="badge {{ badgeClass }} rounded-pill px-3 py-2 fw-medium">{{ order.orderStatus }}</span></td>
                             </tr>
                         {% endfor %}
@@ -135,7 +135,7 @@
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
-                    label: 'Store Revenue ($)',
+                    label: 'Store Revenue (₹)',
                     data: [1200, 1900, 3000, 5000, 4000, 3000, 4500, 5200, 6000, 5500, 7000, 8500],
                     borderColor: '#4f46e5',
                     tension: 0.4,
